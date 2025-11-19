@@ -43,24 +43,6 @@ pet_adocao_CRUD.php/
 └── README.md
 ```
 
-## 🚀 Como rodar localmente
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/<usuario>/pet_adocao_CRUD.php.git
-   cd pet_adocao_CRUD.php
-   ```
-2. Configure o banco:
-   - Crie um banco `petadocao_db`.
-   - Execute os comandos do arquivo `sql/schema.sql` (caso ainda não esteja preenchido, use seu próprio script de criação de tabela `animais`).
-3. Ajuste as credenciais em `public/conexao.php` conforme seu ambiente.
-4. Suba o servidor embutido do PHP:
-   ```bash
-   php -S localhost:8000 -t public
-   ```
-5. Acesse `http://localhost:8000` no navegador.
-
-> Observação: alguns arquivos estão focados no front-end (branch `front`). A branch `main` concentra a versão completa com backend e administração. Ao finalizar os ajustes, mescle `front` → `main` para manter tudo sincronizado.
-
 ## 📚 Referências
 - [Documentação do PHP](https://www.php.net/manual/pt_BR/)
 - Materiais fornecidos pelo professor Daniel Brandão
