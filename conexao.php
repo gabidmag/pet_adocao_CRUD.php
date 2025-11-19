@@ -20,5 +20,5 @@ try {
 } catch (PDOException $e) {
     echo "❌ Erro na Conexão com o Banco de Dados: " . $e->getMessage();
     exit();
-}.
+}
 ?>

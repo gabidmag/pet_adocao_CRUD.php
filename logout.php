@@ -1,4 +1,12 @@
 <?php
     require_once 'conexao.php';
-    // continuar o código depois
+
+    session_start();
+
+    $_SESSION = array();
+
+    session_destroy();
+
+    header('Location: login.php');
+    exit;
 ?>
