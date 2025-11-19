@@ -21,9 +21,9 @@
             </a>
             
             <nav class="main-nav">
-                <a href="#">Pets</a>
-                <a href="#">Sobre Nós</a>
-                <a href="#">Contato</a>
+                <a href="animais.php">Pets</a>
+                <a href="index.php#sobre-nos">Sobre Nós</a>
+                <a href="index.php#contato">Contato</a>
             </nav>
 
             <div class="header-icons">

@@ -13,6 +13,7 @@ try {
 require_once 'templates/header.php';
 ?>
 
+<!-- Hero principal com chamada para ação -->
 <section class="hero-section">
     <div class="container">
         <h1>Adote um Novo Amigo</h1>
@@ -24,6 +25,7 @@ require_once 'templates/header.php';
     </div>
 </section>
 
+<!-- Destaque resumido dos animais na home -->
 <section class="pet-listing-section">
     <div class="container">
         <h2 class="section-title">Encontre seu Companheiro</h2>
@@ -47,7 +49,7 @@ require_once 'templates/header.php';
                                 <span class="pet-card__tag destaque">Destaque</span>
                             <?php endif; ?>
 
-                            <span class="pet-card__tag species <?php echo strtolower(htmlspecialchars($animal['especie'])); ?>">
+                            <span class="pet-card__tag species <?php echo htmlspecialchars(strtolower($animal['especie'])); ?>">
                                 <?php echo htmlspecialchars($animal['especie']); ?>
                             </span>
                         </figure>
@@ -72,6 +74,40 @@ require_once 'templates/header.php';
                 <p>Nenhum animalzinho encontrado. Volte em breve!</p>
             </div>
         <?php endif; ?>
+    </div>
+</section>
+
+<?php
+// Sessão simples apresentando o projeto para o visitante
+?>
+<section id="sobre-nos" class="info-section">
+    <div class="container info-grid">
+        <div>
+            <h2>Sobre o PetAdopt</h2>
+            <p>Somos um grupo de estudantes conectando ONGs e futuros tutores. Usamos um CRUD básico para registrar os pets e manter tudo organizado.</p>
+        </div>
+        <ul class="info-list">
+            <li><i class="fas fa-paw"></i> +100 animais cadastrados</li>
+            <li><i class="fas fa-home"></i> Parcerias com abrigos locais</li>
+            <li><i class="fas fa-user-friends"></i> Voluntários para as visitas</li>
+        </ul>
+    </div>
+</section>
+
+<section id="contato" class="info-section info-section--alt">
+    <div class="container">
+        <h2>Vamos conversar?</h2>
+        <p>Se quiser participar com doações ou ajudando no processo de adoção entre em contato.</p>
+        <div class="contact-options">
+            <a href="mailto:contato@petadopt.com" class="contact-card">
+                <i class="fas fa-envelope-open"></i>
+                contato@petadopt.com
+            </a>
+            <a href="https://wa.me/550000000000" class="contact-card" target="_blank" rel="noopener">
+                <i class="fab fa-whatsapp"></i>
+                (00) 00000-0000
+            </a>
+        </div>
     </div>
 </section>
 
