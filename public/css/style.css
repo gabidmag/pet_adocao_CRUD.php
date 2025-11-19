@@ -1,0 +1,317 @@
+/* ===== CONFIGURAÇÕES GLOBAIS E VARIÁVEIS ===== */
+:root {
+    --primary-color: #18D2D9;
+    --primary-dark: #13AAB0;
+    --secondary-color: #005A7C;
+    --text-dark: #333;
+    --text-light: #777;
+    --bg-light: #F0FAFD;
+    --bg-white: #FFFFFF;
+    --border-color: #E0E0E0;
+    --tag-dog: #5D9CEC;
+    --tag-cat: #FC6E51;
+    --tag-destaque: #FFD700;
+    
+    --font-family: 'Segoe UI', 'Roboto', sans-serif;
+    --border-radius: 12px;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2rem;
+    color: var(--secondary-color);
+    margin-bottom: 40px;
+}
+
+
+/* ===== COMPONENTES GERAIS ===== */
+.btn {
+    display: inline-block;
+    padding: 10px 25px;
+    border-radius: 50px;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--bg-white);
+}
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    color: var(--bg-white);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+
+/* ===== CABEÇALHO (HEADER) ===== */
+.main-header {
+    background-color: var(--bg-white);
+    padding: 1rem 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.main-header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+.logo i {
+    margin-right: 8px;
+}
+
+.main-nav {
+    display: flex;
+    gap: 2rem;
+}
+.main-nav a {
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.header-icons {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 1.2rem;
+}
+
+
+/* ===== SEÇÃO HERO ===== */
+.hero-section {
+    padding: 5rem 0;
+    text-align: center;
+    background-color: #E6FCFF;
+}
+.hero-section h1 {
+    font-size: 2.8rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+.hero-section p {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    margin-bottom: 2rem;
+}
+
+.search-form {
+    display: flex;
+    justify-content: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+.search-form input {
+    flex-grow: 1;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 50px 0 0 50px;
+    font-size: 1rem;
+    border-right: none;
+}
+.search-form button {
+    padding: 0 1.5rem;
+    border: none;
+    background-color: var(--primary-color);
+    color: var(--bg-white);
+    border-radius: 0 50px 50px 0;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.search-form button:hover {
+    background-color: var(--primary-dark);
+}
+
+
+/* ===== LISTAGEM DE ANIMAIS ===== */
+.pet-listing-section {
+    padding: 4rem 0;
+}
+
+.pet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.pet-card {
+    background-color: var(--bg-white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.pet-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.pet-card__image-container {
+    position: relative;
+    height: 250px;
+}
+.pet-card__image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pet-card__tag {
+    position: absolute;
+    top: 1rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: var(--bg-white);
+    text-transform: uppercase;
+}
+.pet-card__tag.species { right: 1rem; }
+.pet-card__tag.destaque {
+    left: 1rem;
+    background-color: var(--tag-destaque);
+    color: var(--text-dark);
+}
+.pet-card__tag.cachorro { background-color: var(--tag-dog); }
+.pet-card__tag.gato { background-color: var(--tag-cat); }
+
+.pet-card__content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Faz o conteúdo crescer e empurrar o botão para baixo */
+}
+.pet-card__content h3 {
+    font-size: 1.4rem;
+    margin-bottom: 0.2rem;
+    color: var(--secondary-color);
+}
+.pet-card__breed {
+    color: var(--text-light);
+    margin-bottom: 1rem;
+}
+.pet-card__details {
+    display: flex;
+    justify-content: space-around;
+    padding: 1rem 0;
+    margin: 1rem 0;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.85rem;
+    text-align: center;
+}
+.pet-card__details span {
+    color: var(--text-light);
+}
+.pet-card__details i {
+    margin-right: 5px;
+    color: var(--primary-color);
+}
+.pet-card__location {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+.pet-card__content .btn {
+    margin-top: auto; /* Truque para alinhar o botão na base do card */
+}
+
+/* ===== RODAPÉ (FOOTER) ===== */
+.main-footer {
+    background-color: var(--secondary-color);
+    color: #ccc;
+    padding: 3rem 0 0 0;
+}
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+.footer-section h4 {
+    color: var(--bg-white);
+    margin-bottom: 1rem;
+}
+.footer-section a {
+    color: #ccc;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+.footer-section a:hover {
+    color: var(--primary-color);
+}
+.social-icons {
+    display: flex;
+    gap: 1rem;
+    font-size: 1.2rem;
+}
+.footer-bottom {
+    text-align: center;
+    padding: 1rem 0;
+    border-top: 1px solid #444;
+    font-size: 0.9rem;
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 768px) {
+    .main-nav, .header-icons {
+        display: none; /* Simplificando para mobile. Um menu hamburguer seria o próximo passo. */
+    }
+    .hero-section h1 {
+        font-size: 2.2rem;
+    }
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    .social-icons {
+        justify-content: center;
+    }
+}
