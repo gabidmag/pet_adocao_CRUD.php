@@ -2,9 +2,29 @@
 session_start();
 require_once 'conexao.php';
 
+$query = "SELECT * FROM animais";
+$where_clauses = [];
+$params = [];
+
+if (!empty($_GET['especie'])) {
+    $where_clauses[] = "especie = :especie";
+    $params[':especie'] = $_GET['especie'];
+}
+
+if (!empty($_GET['porte'])) {
+    $where_clauses[] = "porte = :porte";
+    $params[':porte'] = $_GET['porte'];
+}
+
+if (count($where_clauses) > 0) {
+    $query .= " WHERE " . implode(' AND ', $where_clauses);
+}
+
+$query .= " ORDER BY destaque DESC, data_cadastro DESC";
+
 try {
-    $query = "SELECT * FROM animais ORDER BY destaque DESC, data_cadastro DESC";
-    $stmt = $pdo->query($query);
+    $stmt = $pdo->prepare($query);
+    $stmt->execute($params);
     $animais = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die("Erro ao buscar os animais: " . $e->getMessage());
@@ -24,6 +44,33 @@ require_once 'templates/header.php';
     </div>
 </section>
 
+<section class="intro-section">
+    <div class="container">
+        <div class="intro-content-wrapper">
+            <div class="quick-filters">
+                <a href="index.php?especie=Cachorro" class="filter-btn" data-filter="especie" data-value="Cachorro"><i class="fas fa-dog"></i> Cachorros</a>
+                <a href="index.php?especie=Gato" class="filter-btn" data-filter="especie" data-value="Gato"><i class="fas fa-cat"></i> Gatos</a>
+                <a href="index.php?porte=Pequeno" class="filter-btn" data-filter="porte" data-value="Pequeno"><i class="fas fa-ruler-vertical"></i> Porte Pequeno</a>
+                <a href="index.php" class="filter-btn" data-filter="todos"><i class="fas fa-filter"></i> Todos os Filtros</a>
+            </div>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <span class="stat-number">2000+</span>
+                    <span class="stat-label">Pets Adotados</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">500+</span>
+                    <span class="stat-label">Famílias Felizes</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">150+</span>
+                    <span class="stat-label">Parceiros Ativos</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="pet-listing-section">
     <div class="container">
         <h2 class="section-title">Encontre seu Companheiro</h2>
@@ -35,18 +82,15 @@ require_once 'templates/header.php';
                         <?php
                         $foto_pet = 'https://via.placeholder.com/400x350';
                         $caminho_foto = $animal['foto_path'];
-
                         if (!empty($caminho_foto) && file_exists($caminho_foto)) {
                             $foto_pet = htmlspecialchars($caminho_foto);
                         }
                         ?>
                         <figure class="pet-card__image-container">
                             <img src="<?php echo $foto_pet; ?>" alt="Foto de <?php echo htmlspecialchars($animal['nome']); ?>">
-                            
                             <?php if ($animal['destaque']): ?>
                                 <span class="pet-card__tag destaque">Destaque</span>
                             <?php endif; ?>
-
                             <span class="pet-card__tag species <?php echo strtolower(htmlspecialchars($animal['especie'])); ?>">
                                 <?php echo htmlspecialchars($animal['especie']); ?>
                             </span>
@@ -55,7 +99,27 @@ require_once 'templates/header.php';
                             <h3><?php echo htmlspecialchars($animal['nome']); ?></h3>
                             <p class="pet-card__breed"><?php echo htmlspecialchars($animal['raca']); ?></p>
                             <div class="pet-card__details">
-                                <span><i class="fas fa-calendar-alt"></i> <?php echo htmlspecialchars($animal['idade_anos']); ?> ano(s)</span>
+                                <span>
+                                    <i class="fas fa-calendar-alt"></i> 
+                                    <?php
+                                        $idade_texto = '';
+                                        $anos = $animal['idade_anos'];
+                                        $meses = $animal['idade_meses'];
+                                        if ($anos > 0) {
+                                            $idade_texto .= $anos . ' ' . ($anos > 1 ? 'anos' : 'ano');
+                                        }
+                                        if ($meses > 0) {
+                                            if ($anos > 0) {
+                                                $idade_texto .= ' e ';
+                                            }
+                                            $idade_texto .= $meses . ' ' . ($meses > 1 ? 'meses' : 'mês');
+                                        }
+                                        if (empty($idade_texto)) {
+                                            $idade_texto = 'Menos de 1 mês';
+                                        }
+                                        echo htmlspecialchars($idade_texto);
+                                    ?>
+                                </span>
                                 <span><i class="fas fa-venus-mars"></i> <?php echo htmlspecialchars($animal['genero']); ?></span>
                                 <span><i class="fas fa-ruler-combined"></i> <?php echo htmlspecialchars($animal['porte']); ?></span>
                             </div>
@@ -69,7 +133,7 @@ require_once 'templates/header.php';
             </div>
         <?php else: ?>
             <div class="no-pets-found">
-                <p>Nenhum animalzinho encontrado. Volte em breve!</p>
+                <p>Nenhum animalzinho encontrado para os filtros selecionados.</p>
             </div>
         <?php endif; ?>
     </div>

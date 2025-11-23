@@ -1,5 +1,3 @@
-USE `petadocao_db`;
-
 DROP TABLE IF EXISTS `animais`;
 
 CREATE TABLE `animais` (
@@ -7,8 +5,8 @@ CREATE TABLE `animais` (
   `nome` VARCHAR(100) NOT NULL,
   `especie` VARCHAR(50) NOT NULL,
   `raca` VARCHAR(100),
-  `idade_anos` INT,
-  `idade_meses` INT,
+  `idade_anos` INT DEFAULT 0,
+  `idade_meses` INT DEFAULT 0,
   `genero` VARCHAR(20),
   `porte` VARCHAR(30),
   `localizacao` VARCHAR(255),

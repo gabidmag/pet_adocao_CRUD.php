@@ -167,6 +167,93 @@ img {
 }
 
 
+/* ===== SEÇÃO INTRO (FILTROS E STATS) ===== */
+.intro-section {
+    background-color: #E6FCFF;
+    padding-bottom: 2rem;
+    margin-top: -30px;
+    position: relative;
+    z-index: 10;
+}
+
+.intro-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+.quick-filters {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+    border-radius: 50px;
+    background-color: var(--bg-white);
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-btn i {
+    margin-right: 8px;
+    color: var(--text-light);
+    transition: color 0.2s ease;
+}
+
+.filter-btn:hover {
+    background-color: var(--primary-color);
+    color: var(--bg-white);
+    border-color: var(--primary-color);
+}
+
+.filter-btn:hover i {
+    color: var(--bg-white);
+}
+
+.filter-btn.active {
+    background-color: var(--primary-color);
+    color: var(--bg-white);
+    border-color: var(--primary-color);
+}
+
+.filter-btn.active i {
+    color: var(--bg-white);
+}
+
+.stats-container {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    flex-wrap: wrap;
+    gap: 3rem;
+    padding: 1rem 0;
+}
+
+.stat-item {
+    flex-basis: 200px;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+    display: block;
+}
+
+.stat-label {
+    font-size: 1rem;
+    color: var(--text-light);
+}
+
+
 /* ===== LISTAGEM DE ANIMAIS ===== */
 .pet-listing-section {
     padding: 4rem 0;
@@ -225,7 +312,7 @@ img {
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* Faz o conteúdo crescer e empurrar o botão para baixo */
+    flex-grow: 1;
 }
 .pet-card__content h3 {
     font-size: 1.4rem;
@@ -259,8 +346,9 @@ img {
     margin-bottom: 1.5rem;
 }
 .pet-card__content .btn {
-    margin-top: auto; /* Truque para alinhar o botão na base do card */
+    margin-top: auto;
 }
+
 
 /* ===== RODAPÉ (FOOTER) ===== */
 .main-footer {
@@ -299,10 +387,11 @@ img {
     font-size: 0.9rem;
 }
 
+
 /* ===== RESPONSIVIDADE ===== */
 @media (max-width: 768px) {
     .main-nav, .header-icons {
-        display: none; /* Simplificando para mobile. Um menu hamburguer seria o próximo passo. */
+        display: none;
     }
     .hero-section h1 {
         font-size: 2.2rem;
@@ -313,5 +402,110 @@ img {
     }
     .social-icons {
         justify-content: center;
+    }
+}
+
+
+/* ===== PÁGINA DE DETALHES DO ANIMAL ===== */
+.page-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.pet-detail-container {
+    display: flex;
+    gap: 3rem;
+    background-color: var(--bg-white);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+}
+
+.pet-detail-image {
+    flex: 1;
+    max-width: 50%;
+}
+
+.pet-detail-image img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+    object-fit: cover;
+}
+
+.pet-detail-info {
+    flex: 1;
+}
+
+.pet-detail-info h1 {
+    font-size: 2.5rem;
+    margin-top: 0;
+    color: var(--secondary-color);
+}
+
+.pet-detail-breed {
+    font-size: 1.1rem;
+    color: var(--text-light);
+    margin-top: -1rem;
+    margin-bottom: 2rem;
+}
+
+.info-section {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1.5rem;
+}
+.info-section:last-of-type {
+    border-bottom: none;
+}
+
+.info-section h3 {
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+}
+
+.info-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.info-section ul li {
+    margin-bottom: 0.5rem;
+    color: var(--text-light);
+}
+.info-section ul li strong {
+    color: var(--text-dark);
+}
+
+.adoption-cta {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.adoption-fee {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: var(--text-light);
+}
+
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+}
+
+.not-found-container {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+
+/* ===== RESPONSIVIDADE PÁGINA DE DETALHES ===== */
+@media (max-width: 992px) {
+    .pet-detail-container {
+        flex-direction: column;
+    }
+    .pet-detail-image {
+        max-width: 100%;
     }
 }

@@ -1,4 +1,4 @@
-</main> <!-- Fecha a tag <main> aberta no header -->
+</main>
 
     <footer class="main-footer">
         <div class="container">
@@ -28,5 +28,6 @@
         </div>
     </footer>
 
+    <script src="js/filtro.js"></script>
 </body>
 </html>
