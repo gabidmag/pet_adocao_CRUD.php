@@ -7,37 +7,46 @@
     $upload_dir = '../../uploads/'; 
     $animal_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
+    // Garante que a pasta de upload exista
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
+
     // 1. Lógica de Busca: Carrega os dados do animal
     if (!$animal_id) {
         header('Location: listar.php');
         exit();
     }
 
-    try {
-        $stmt = $pdo->prepare("SELECT id, nome, especie, raca, idade, descricao, foto, status FROM animais WHERE id = :id");
-        $stmt->bindParam(':id', $animal_id);
-        $stmt->execute();
-        
-        $animal = $stmt->fetch();
+    
+    $stmt = $mysqli->prepare("SELECT id, nome, especie, raca, idade, descricao, foto, status FROM animais WHERE id = ?");
+    if ($stmt) {
+        $stmt->bind_param("i", $animal_id);
+        if ($stmt->execute()) {
+            $resultado = $stmt->get_result();
+            $animal = $resultado->fetch_object();
 
-        if (!$animal) {
-            $mensagem = "❌ Animal não encontrado.";
-            header('Refresh: 3; URL=listar.php'); 
+            if (!$animal) {
+                $mensagem = "❌ Animal não encontrado.";
+                header('Refresh: 3; URL=listar.php'); 
+            }
+        } else {
+            $mensagem = "❌ Erro ao buscar animal: " . $stmt->error;
         }
-
-    } catch (PDOException $e) {
-        $mensagem = "❌ Erro ao buscar animal: " . $e->getMessage();
+        $stmt->close();
+    } else {
+        $mensagem = "❌ Erro ao preparar busca: " . $mysqli->error;
     }
 
     // 2. Lógica de Edição: Processa o POST para atualizar o animal
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && $animal) {
         
-        $nome = filter_input(INPUT_POST, 'nome', FILTER_SANITIZE_STRING);
-        $especie = filter_input(INPUT_POST, 'especie', FILTER_SANITIZE_STRING);
-        $raca = filter_input(INPUT_POST, 'raca', FILTER_SANITIZE_STRING);
-        $idade = filter_input(INPUT_POST, 'idade', FILTER_VALIDATE_INT);
+        $nome      = filter_input(INPUT_POST, 'nome', FILTER_SANITIZE_STRING);
+        $especie   = filter_input(INPUT_POST, 'especie', FILTER_SANITIZE_STRING);
+        $raca      = filter_input(INPUT_POST, 'raca', FILTER_SANITIZE_STRING);
+        $idade     = filter_input(INPUT_POST, 'idade', FILTER_VALIDATE_INT);
         $descricao = filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_STRING);
-        $status = filter_input(INPUT_POST, 'status', FILTER_SANITIZE_STRING);
+        $status    = filter_input(INPUT_POST, 'status', FILTER_SANITIZE_STRING);
         $foto_atual = $animal->foto; 
 
         // A. Lógica para NOVO upload de imagem
@@ -51,8 +60,10 @@
             if (in_array($_FILES['foto_nova']['type'], $allowed_types) && $_FILES['foto_nova']['size'] < 5000000) {
                 
                 if (move_uploaded_file($_FILES['foto_nova']['tmp_name'], $caminho_completo)) {
+                    // Atualiza o nome da foto
                     $foto_atual = $novo_foto_nome;
 
+                    // Apaga a foto antiga se existir
                     if ($animal->foto && file_exists($upload_dir . $animal->foto)) {
                         unlink($upload_dir . $animal->foto);
                     }
@@ -69,37 +80,54 @@
         if (empty($nome) || empty($especie) || $idade === false) {
             $mensagem = "❌ Por favor, preencha os campos obrigatórios.";
         } else if (empty($mensagem)) {
-            try {
-                $sql = "UPDATE animais SET nome = :nome, especie = :especie, raca = :raca, idade = :idade, descricao = :descricao, foto = :foto, status = :status WHERE id = :id";
-                
-                $stmt = $pdo->prepare($sql);
 
-                $stmt->bindParam(':nome', $nome);
-                $stmt->bindParam(':especie', $especie);
-                $stmt->bindParam(':raca', $raca);
-                $stmt->bindParam(':idade', $idade);
-                $stmt->bindParam(':descricao', $descricao);
-                $stmt->bindParam(':foto', $foto_atual);
-                $stmt->bindParam(':status', $status);
-                $stmt->bindParam(':id', $animal_id);
-                
-                $stmt->execute();
-                
-                $mensagem = "✅ Animal **" . htmlspecialchars($nome) . "** atualizado com sucesso!";
+            $sql = "UPDATE animais 
+                    SET nome = ?, especie = ?, raca = ?, idade = ?, descricao = ?, foto = ?, status = ? 
+                    WHERE id = ?";
 
-                $stmt = $pdo->prepare("SELECT id, nome, especie, raca, idade, descricao, foto, status FROM animais WHERE id = :id");
-                $stmt->bindParam(':id', $animal_id);
-                $stmt->execute();
-                $animal = $stmt->fetch();
+            $stmt = $mysqli->prepare($sql);
 
-            } catch (PDOException $e) {
-                $mensagem = "❌ Erro ao atualizar animal: " . $e->getMessage();
+            if ($stmt) {
+                $stmt->bind_param(
+                    "sssisssi",
+                    $nome,
+                    $especie,
+                    $raca,
+                    $idade,
+                    $descricao,
+                    $foto_atual,
+                    $status,
+                    $animal_id
+                );
+
+                if ($stmt->execute()) {
+                    $mensagem = "✅ Animal **" . htmlspecialchars($nome) . "** atualizado com sucesso!";
+                } else {
+                    $mensagem = "❌ Erro ao atualizar animal: " . $stmt->error;
+                }
+
+                $stmt->close();
+
+                // Recarrega os dados atualizados do animal
+                $stmt2 = $mysqli->prepare("SELECT id, nome, especie, raca, idade, descricao, foto, status FROM animais WHERE id = ?");
+                if ($stmt2) {
+                    $stmt2->bind_param("i", $animal_id);
+                    if ($stmt2->execute()) {
+                        $resultado2 = $stmt2->get_result();
+                        $animal = $resultado2->fetch_object();
+                    }
+                    $stmt2->close();
+                }
+
+            } else {
+                $mensagem = "❌ Erro ao preparar atualização: " . $mysqli->error;
             }
         }
     }
 
     if ($animal):
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">

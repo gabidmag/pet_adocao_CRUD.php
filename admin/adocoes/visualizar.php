@@ -1,6 +1,6 @@
 <?php
     require_once '../../verifica-login.php'; 
-    require_once '../../conexao.php'; 
+    require_once '../../conexao.php';
 
     $mensagem = '';
     $pedido = null;
@@ -16,66 +16,95 @@
         $novo_status = filter_input(INPUT_POST, 'status', FILTER_SANITIZE_STRING);
 
         if (in_array($novo_status, ['pendente', 'aprovada', 'rejeitada'])) {
-            try {
-                $sql_update_pedido = "UPDATE adocoes SET status = :status WHERE id = :id";
-                $stmt_update_pedido = $pdo->prepare($sql_update_pedido);
-                $stmt_update_pedido->bindParam(':status', $novo_status);
-                $stmt_update_pedido->bindParam(':id', $pedido_id);
-                $stmt_update_pedido->execute();
-                
-                if ($novo_status == 'aprovada') {
-                    $sql_update_animal = "UPDATE animais SET status = 'adotado' WHERE id = (SELECT animal_id FROM adocoes WHERE id = :id)";
-                    $stmt_update_animal = $pdo->prepare($sql_update_animal);
-                    $stmt_update_animal->bindParam(':id', $pedido_id);
-                    $stmt_update_animal->execute();
+
+            // Atualiza status do pedido
+            $sql_update_pedido = "UPDATE adocoes SET status = ? WHERE id = ?";
+            $stmt_update_pedido = $mysqli->prepare($sql_update_pedido);
+
+            if ($stmt_update_pedido) {
+                $stmt_update_pedido->bind_param("si", $novo_status, $pedido_id);
+
+                if ($stmt_update_pedido->execute()) {
+
+                    // Se aprovada, marca animal como adotado
+                    if ($novo_status == 'aprovada') {
+                        $sql_update_animal = "UPDATE animais 
+                                              SET status = 'adotado' 
+                                              WHERE id = (SELECT animal_id FROM adocoes WHERE id = ?)";
+                        $stmt_update_animal = $mysqli->prepare($sql_update_animal);
+
+                        if ($stmt_update_animal) {
+                            $stmt_update_animal->bind_param("i", $pedido_id);
+                            $stmt_update_animal->execute();
+                            $stmt_update_animal->close();
+                        }
+                    }
+
+                    // Se rejeitada, marca animal como disponível
+                    if ($novo_status == 'rejeitada') {
+                        $sql_update_animal = "UPDATE animais 
+                                              SET status = 'disponivel' 
+                                              WHERE id = (SELECT animal_id FROM adocoes WHERE id = ?)";
+                        $stmt_update_animal = $mysqli->prepare($sql_update_animal);
+
+                        if ($stmt_update_animal) {
+                            $stmt_update_animal->bind_param("i", $pedido_id);
+                            $stmt_update_animal->execute();
+                            $stmt_update_animal->close();
+                        }
+                    }
+
+                    $mensagem = "✅ Status do pedido atualizado para: " . ucfirst($novo_status);
+
+                } else {
+                    $mensagem = "❌ Erro ao atualizar status: " . $stmt_update_pedido->error;
                 }
-        
-                if ($novo_status == 'rejeitada') {
-                    $sql_update_animal = "UPDATE animais SET status = 'disponivel' WHERE id = (SELECT animal_id FROM adocoes WHERE id = :id)";
-                    $stmt_update_animal = $pdo->prepare($sql_update_animal);
-                    $stmt_update_animal->bindParam(':id', $pedido_id);
-                    $stmt_update_animal->execute();
-                }
 
-
-                $mensagem = "✅ Status do pedido atualizado para: " . ucfirst($novo_status);
-
-            } catch (PDOException $e) {
-                $mensagem = "❌ Erro ao atualizar status: " . $e->getMessage();
+                $stmt_update_pedido->close();
+            } else {
+                $mensagem = "❌ Erro ao preparar atualização de status: " . $mysqli->error;
             }
+
         } else {
             $mensagem = "❌ Status inválido fornecido.";
         }
     }
 
-
     // 2. Lógica para carregar os dados do pedido e do animal
-    try {
-        $sql = "SELECT 
-                    a.*,
-                    p.nome AS nome_animal, p.especie, p.raca
-                FROM adocoes a
-                JOIN animais p ON a.animal_id = p.id
-                WHERE a.id = :id";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':id', $pedido_id);
-        $stmt->execute();
-        
-        $pedido = $stmt->fetch();
+    $sql = "SELECT 
+                a.*,
+                p.nome AS nome_animal, p.especie, p.raca
+            FROM adocoes a
+            JOIN animais p ON a.animal_id = p.id
+            WHERE a.id = ?";
 
-        if (!$pedido) {
-            $mensagem = "❌ Pedido de adoção não encontrado.";
-            header('Refresh: 3; URL=listar.php'); 
+    $stmt = $mysqli->prepare($sql);
+
+    if ($stmt) {
+        $stmt->bind_param("i", $pedido_id);
+
+        if ($stmt->execute()) {
+            $resultado = $stmt->get_result();
+            $pedido = $resultado->fetch_object();
+
+            if (!$pedido) {
+                $mensagem = "❌ Pedido de adoção não encontrado.";
+                header('Refresh: 3; URL=listar.php'); 
+            }
+
+            $resultado->free();
+        } else {
+            $mensagem = "❌ Erro ao buscar pedido: " . $stmt->error;
         }
 
-    } catch (PDOException $e) {
-        $mensagem = "❌ Erro ao buscar pedido: " . $e->getMessage();
+        $stmt->close();
+    } else {
+        $mensagem = "❌ Erro ao preparar busca: " . $mysqli->error;
     }
-
 
     if ($pedido):
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">

@@ -9,15 +9,21 @@
         exit();
     }
 
-    try {
-        $stmt_delete = $pdo->prepare("DELETE FROM adocoes WHERE id = :id");
-        $stmt_delete->bindParam(':id', $pedido_id);
-        $stmt_delete->execute();
+    // Deletar o pedido
+    $stmt_delete = $mysqli->prepare("DELETE FROM adocoes WHERE id = ?");
+    
+    if ($stmt_delete) {
+        $stmt_delete->bind_param("i", $pedido_id);
 
-        $_SESSION['mensagem_sucesso'] = "Pedido de adoção deletado com sucesso!"; 
+        if ($stmt_delete->execute()) {
+            $_SESSION['mensagem_sucesso'] = "Pedido de adoção deletado com sucesso!";
+        } else {
+            $_SESSION['mensagem_erro'] = "Erro ao deletar pedido: " . $stmt_delete->error;
+        }
 
-    } catch (PDOException $e) {
-        $_SESSION['mensagem_erro'] = "Erro ao deletar pedido: " . $e->getMessage();
+        $stmt_delete->close();
+    } else {
+        $_SESSION['mensagem_erro'] = "Erro ao preparar exclusão: " . $mysqli->error;
     }
 
     header('Location: listar.php');

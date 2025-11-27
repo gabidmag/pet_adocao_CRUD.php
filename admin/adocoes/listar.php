@@ -6,23 +6,25 @@
     $pedidos = [];
     $erro = '';
 
-    try {
-        $sql = "SELECT 
-                    a.id, a.nome_adotante, a.email_adotante, a.status, a.data_pedido,
-                    p.nome AS nome_animal, p.id AS animal_id
-                FROM adocoes a
-                JOIN animais p ON a.animal_id = p.id
-                ORDER BY a.data_pedido DESC";
-        
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute();
-        
-        $pedidos = $stmt->fetchAll();
+    $sql = "SELECT 
+                a.id, a.nome_adotante, a.email_adotante, a.status, a.data_pedido,
+                p.nome AS nome_animal, p.id AS animal_id
+            FROM adocoes a
+            JOIN animais p ON a.animal_id = p.id
+            ORDER BY a.data_pedido DESC";
 
-    } catch (PDOException $e) {
-        $erro = "❌ Erro ao carregar a lista de pedidos: " . $e->getMessage();
+    if ($resultado = $mysqli->query($sql)) {
+
+        // pega todos os registros como array associativo
+        $pedidos = $resultado->fetch_all(MYSQLI_ASSOC);
+
+        $resultado->free();
+
+    } else {
+        $erro = "❌ Erro ao carregar a lista de pedidos: " . $mysqli->error;
     }
 
+    // Mensagens de sessão
     $mensagem = '';
     if (isset($_SESSION['mensagem_sucesso'])) {
         $mensagem = "<div class='alerta sucesso'>" . $_SESSION['mensagem_sucesso'] . "</div>";
@@ -32,7 +34,9 @@
         $mensagem = "<div class='alerta erro'>" . $_SESSION['mensagem_erro'] . "</div>";
         unset($_SESSION['mensagem_erro']);
     }
+
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">

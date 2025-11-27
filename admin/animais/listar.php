@@ -5,18 +5,22 @@
     $animais = [];
     $erro = '';
 
-    try {
-    $sql = "SELECT id, nome, especie, raca, idade, status, data_cadastro FROM animais ORDER BY data_cadastro DESC";
+    $sql = "SELECT id, nome, especie, raca, idade, status, data_cadastro 
+            FROM animais 
+            ORDER BY data_cadastro DESC";
 
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
+   
+    if ($resultado = $mysqli->query($sql)) {
 
-    $animais = $stmt->fetchAll();
+        
+        $animais = $resultado->fetch_all(MYSQLI_ASSOC);
+        $resultado->free();
 
-    } catch (PDOException $e) {
-        $erro = "❌ Erro ao carregar a lista de animais: " . $e->getMessage();
+    } else {
+        $erro = "❌ Erro ao carregar a lista de animais: " . $mysqli->error;
     }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">

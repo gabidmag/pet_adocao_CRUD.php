@@ -6,7 +6,7 @@
     $mensagem = '';
     $upload_dir = '../../uploads/'; 
 
-    
+    // Garante que a pasta de upload exista
     if (!is_dir($upload_dir)) {
         mkdir($upload_dir, 0777, true);
     }
@@ -14,12 +14,12 @@
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         // 1. Coleta e sanitiza os dados do formulário
-        $nome = filter_input(INPUT_POST, 'nome', FILTER_SANITIZE_STRING);
-        $especie = filter_input(INPUT_POST, 'especie', FILTER_SANITIZE_STRING);
-        $raca = filter_input(INPUT_POST, 'raca', FILTER_SANITIZE_STRING);
-        $idade = filter_input(INPUT_POST, 'idade', FILTER_VALIDATE_INT);
+        $nome      = filter_input(INPUT_POST, 'nome', FILTER_SANITIZE_STRING);
+        $especie   = filter_input(INPUT_POST, 'especie', FILTER_SANITIZE_STRING);
+        $raca      = filter_input(INPUT_POST, 'raca', FILTER_SANITIZE_STRING);
+        $idade     = filter_input(INPUT_POST, 'idade', FILTER_VALIDATE_INT);
         $descricao = filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_STRING);
-        $status = 'disponivel'; 
+        $status    = 'disponivel'; 
 
         $foto_nome = null;
         $caminho_completo = null;
@@ -30,7 +30,6 @@
             $foto_nome = uniqid() . '.' . $extensao; // Nome único
             $caminho_completo = $upload_dir . $foto_nome;
 
-            
             $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
             if (in_array($_FILES['foto']['type'], $allowed_types) && $_FILES['foto']['size'] < 5000000) { // Limite de 5MB
                 if (!move_uploaded_file($_FILES['foto']['tmp_name'], $caminho_completo)) {
@@ -45,29 +44,45 @@
         if (empty($nome) || empty($especie) || $idade === false) {
             $mensagem = "❌ Por favor, preencha os campos obrigatórios (Nome, Espécie e Idade).";
         } else if (empty($mensagem)) {
-            try {
-                $sql = "INSERT INTO animais (nome, especie, raca, idade, descricao, foto, status) 
-                        VALUES (:nome, :especie, :raca, :idade, :descricao, :foto, :status)";
-                
-                $stmt = $pdo->prepare($sql);
 
-                $stmt->bindParam(':nome', $nome);
-                $stmt->bindParam(':especie', $especie);
-                $stmt->bindParam(':raca', $raca);
-                $stmt->bindParam(':idade', $idade);
-                $stmt->bindParam(':descricao', $descricao);
-                $stmt->bindParam(':foto', $foto_nome);
-                $stmt->bindParam(':status', $status);
-                
-                $stmt->execute();
-                
-                $mensagem = "✅ Animal **" . htmlspecialchars($nome) . "** cadastrado com sucesso!";
+            // Usando MySQLi (prepared statement)
+            $sql = "INSERT INTO animais (nome, especie, raca, idade, descricao, foto, status) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-            } catch (PDOException $e) {
-                $mensagem = "❌ Erro ao cadastrar animal: " . $e->getMessage();
+            // Prepara a query
+            $stmt = $mysqli->prepare($sql);
+
+            if ($stmt === false) {
+                $mensagem = "❌ Erro ao preparar a query: " . $mysqli->error;
+
+                // Se deu erro e já tinha feito upload da foto, apaga
                 if ($foto_nome && file_exists($caminho_completo)) {
                     unlink($caminho_completo);
                 }
+            } else {
+                $stmt->bind_param(
+                    "sssisss",
+                    $nome,
+                    $especie,
+                    $raca,
+                    $idade,
+                    $descricao,
+                    $foto_nome,
+                    $status
+                );
+
+                if ($stmt->execute()) {
+                    $mensagem = "✅ Animal **" . htmlspecialchars($nome) . "** cadastrado com sucesso!";
+                } else {
+                    $mensagem = "❌ Erro ao cadastrar animal: " . $stmt->error;
+                    
+                    // Se falhar o insert, apagar a foto enviada
+                    if ($foto_nome && file_exists($caminho_completo)) {
+                        unlink($caminho_completo);
+                    }
+                }
+
+                $stmt->close();
             }
         }
     }
