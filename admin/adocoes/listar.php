@@ -1,42 +1,44 @@
 <?php
-    
-    require_once '../../verifica-login.php'; 
-    require_once '../../conexao.php'; 
+    require_once '../../conexao.php';
+    require_once '../../verifica-login.php';
+    require_login('../../login.php'); 
 
     $pedidos = [];
     $erro = '';
+    $mensagem = '';
 
+    // Busca os pedidos
     $sql = "SELECT 
-                a.id, a.nome_adotante, a.email_adotante, a.status, a.data_pedido,
+                a.id, a.nome_adotante, a.email_adotante, a.telefone_adotante, a.motivo_adocao, a.data_pedido,
                 p.nome AS nome_animal, p.id AS animal_id
             FROM adocoes a
             JOIN animais p ON a.animal_id = p.id
             ORDER BY a.data_pedido DESC";
 
-    if ($resultado = $mysqli->query($sql)) {
+    $resultado = mysqli_query($mysqli, $sql);
 
-        // pega todos os registros como array associativo
-        $pedidos = $resultado->fetch_all(MYSQLI_ASSOC);
-
-        $resultado->free();
-
+    if ($resultado) {
+        // Pega todos os registros
+        while ($row = mysqli_fetch_assoc($resultado)) {
+            $pedidos[] = $row;
+        }
+        
+        mysqli_free_result($resultado);
     } else {
-        $erro = "❌ Erro ao carregar a lista de pedidos: " . $mysqli->error;
+        $erro = "❌ Erro ao carregar a lista de pedidos: " . mysqli_error($mysqli);
     }
 
     // Mensagens de sessão
-    $mensagem = '';
     if (isset($_SESSION['mensagem_sucesso'])) {
         $mensagem = "<div class='alerta sucesso'>" . $_SESSION['mensagem_sucesso'] . "</div>";
         unset($_SESSION['mensagem_sucesso']);
     }
+
     if (isset($_SESSION['mensagem_erro'])) {
         $mensagem = "<div class='alerta erro'>" . $_SESSION['mensagem_erro'] . "</div>";
         unset($_SESSION['mensagem_erro']);
     }
-
 ?>
-
 
 <!DOCTYPE html>
 <html lang="pt-br">

@@ -1,126 +1,97 @@
 <?php
-    require_once '../../verifica-login.php'; 
-    require_once '../../conexao.php'; 
+    require_once '../../conexao.php';
+    require_once '../../verifica-login.php';
+    require_login('../../login.php'); 
 
     $mensagem = '';
     $animal = null;
     $upload_dir = '../../uploads/'; 
-    $animal_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 
-    // Garante que a pasta de upload exista
-    if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0777, true);
-    }
+    // Pega o ID do animal
+    $animal_id = $_GET['id'] ?? 0;
 
-    // 1. Lógica de Busca: Carrega os dados do animal
+    // Verifica se tem ID
     if (!$animal_id) {
         header('Location: listar.php');
         exit();
     }
 
-    
-    $stmt = $mysqli->prepare("SELECT id, nome, especie, raca, idade, descricao, foto, status FROM animais WHERE id = ?");
-    if ($stmt) {
-        $stmt->bind_param("i", $animal_id);
-        if ($stmt->execute()) {
-            $resultado = $stmt->get_result();
-            $animal = $resultado->fetch_object();
-
-            if (!$animal) {
-                $mensagem = "❌ Animal não encontrado.";
-                header('Refresh: 3; URL=listar.php'); 
-            }
-        } else {
-            $mensagem = "❌ Erro ao buscar animal: " . $stmt->error;
-        }
-        $stmt->close();
-    } else {
-        $mensagem = "❌ Erro ao preparar busca: " . $mysqli->error;
+    // Cria a pasta de uploads se não existir
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
     }
 
-    // 2. Lógica de Edição: Processa o POST para atualizar o animal
+    // 1. Busca os dados do animal
+    $sql_busca = "SELECT * FROM animais WHERE id = $animal_id";
+    $resultado = mysqli_query($mysqli, $sql_busca);
+
+    if ($resultado && mysqli_num_rows($resultado) > 0) {
+        $animal = mysqli_fetch_assoc($resultado);
+    } else {
+        $mensagem = "❌ Animal não encontrado.";
+        header('Refresh: 3; URL=listar.php'); 
+    }
+
+    // 2. Processa a edição se for POST
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && $animal) {
         
-        $nome      = filter_input(INPUT_POST, 'nome', FILTER_SANITIZE_STRING);
-        $especie   = filter_input(INPUT_POST, 'especie', FILTER_SANITIZE_STRING);
-        $raca      = filter_input(INPUT_POST, 'raca', FILTER_SANITIZE_STRING);
-        $idade     = filter_input(INPUT_POST, 'idade', FILTER_VALIDATE_INT);
-        $descricao = filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_STRING);
-        $status    = filter_input(INPUT_POST, 'status', FILTER_SANITIZE_STRING);
-        $foto_atual = $animal->foto; 
-
-        // A. Lógica para NOVO upload de imagem
-        if (isset($_FILES['foto_nova']) && $_FILES['foto_nova']['error'] === UPLOAD_ERR_OK) {
+        // Pega dados do formulário
+        $nome = $_POST['nome'] ?? '';
+        $especie = $_POST['especie'] ?? '';
+        $raca = $_POST['raca'] ?? '';
+        $idade = $_POST['idade'] ?? 0;
+        $descricao = $_POST['descricao'] ?? '';
+        $status = $_POST['status'] ?? 'disponivel';
+        
+        $foto_atual = $animal['foto']; // Mantém a foto atual
+        
+        // Se enviou nova foto
+        if (!empty($_FILES['foto_nova']['name']) && $_FILES['foto_nova']['error'] === UPLOAD_ERR_OK) {
             
             $extensao = pathinfo($_FILES['foto_nova']['name'], PATHINFO_EXTENSION);
             $novo_foto_nome = uniqid() . '.' . $extensao;
             $caminho_completo = $upload_dir . $novo_foto_nome;
-
-            $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-            if (in_array($_FILES['foto_nova']['type'], $allowed_types) && $_FILES['foto_nova']['size'] < 5000000) {
+            
+            // Tipos permitidos
+            $tipos_permitidos = ['image/jpeg', 'image/png', 'image/gif'];
+            
+            if (in_array($_FILES['foto_nova']['type'], $tipos_permitidos) && $_FILES['foto_nova']['size'] < 5000000) {
                 
+                // Faz upload da nova foto
                 if (move_uploaded_file($_FILES['foto_nova']['tmp_name'], $caminho_completo)) {
-                    // Atualiza o nome da foto
-                    $foto_atual = $novo_foto_nome;
-
+                    
                     // Apaga a foto antiga se existir
-                    if ($animal->foto && file_exists($upload_dir . $animal->foto)) {
-                        unlink($upload_dir . $animal->foto);
+                    if (!empty($animal['foto']) && file_exists($upload_dir . $animal['foto'])) {
+                        unlink($upload_dir . $animal['foto']);
                     }
-
-                } else {
-                    $mensagem = "Erro ao fazer upload da foto. Verifique as permissões.";
+                    
+                    $foto_atual = $novo_foto_nome;
                 }
-            } else {
-                $mensagem = "Arquivo inválido para foto.";
             }
         }
         
-        // B. Validação e Update no DB
-        if (empty($nome) || empty($especie) || $idade === false) {
-            $mensagem = "❌ Por favor, preencha os campos obrigatórios.";
-        } else if (empty($mensagem)) {
-
-            $sql = "UPDATE animais 
-                    SET nome = ?, especie = ?, raca = ?, idade = ?, descricao = ?, foto = ?, status = ? 
-                    WHERE id = ?";
-
-            $stmt = $mysqli->prepare($sql);
-
-            if ($stmt) {
-                $stmt->bind_param(
-                    "sssisssi",
-                    $nome,
-                    $especie,
-                    $raca,
-                    $idade,
-                    $descricao,
-                    $foto_atual,
-                    $status,
-                    $animal_id
-                );
-
-                if ($stmt->execute()) {
-                    $mensagem = "✅ Animal **" . htmlspecialchars($nome) . "** atualizado com sucesso!";
-                } else {
-                    $mensagem = "❌ Erro ao atualizar animal: " . $stmt->error;
+        // Valida e atualiza
+        if (empty($nome) || empty($especie)) {
+            $mensagem = "❌ Preencha Nome e Espécie.";
+        } else {
+            
+            $sql_update = "UPDATE animais 
+                        SET nome = '$nome', especie = '$especie', raca = '$raca', 
+                            idade = $idade, descricao = '$descricao', 
+                            foto = '$foto_atual', status = '$status' 
+                        WHERE id = $animal_id";
+            
+            if (mysqli_query($mysqli, $sql_update)) {
+                $mensagem = "✅ Animal $nome atualizado com sucesso!";
+                
+                // Recarrega os dados atualizados
+                $sql_busca = "SELECT * FROM animais WHERE id = $animal_id";
+                $resultado = mysqli_query($mysqli, $sql_busca);
+                if ($resultado) {
+                    $animal = mysqli_fetch_assoc($resultado);
                 }
-
-                $stmt->close();
-
-                // Recarrega os dados atualizados do animal
-                $stmt2 = $mysqli->prepare("SELECT id, nome, especie, raca, idade, descricao, foto, status FROM animais WHERE id = ?");
-                if ($stmt2) {
-                    $stmt2->bind_param("i", $animal_id);
-                    if ($stmt2->execute()) {
-                        $resultado2 = $stmt2->get_result();
-                        $animal = $resultado2->fetch_object();
-                    }
-                    $stmt2->close();
-                }
-
             } else {
-                $mensagem = "❌ Erro ao preparar atualização: " . $mysqli->error;
+                $mensagem = "❌ Erro ao atualizar: " . mysqli_error($mysqli);
             }
         }
     }

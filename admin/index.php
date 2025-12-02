@@ -1,19 +1,28 @@
 <?php
-    require_once '../verifica-login.php'; 
     require_once '../conexao.php'; 
+    require_once '../verifica-login.php';
+    require_login('../login.php');
 
-    $nome_usuario = $_SESSION['usuario_nome'] ?? 'Administrador';
+    $nome_usuario = $_SESSION['nome_usuario'] ?? 'Administrador';
     $total_animais = 0;
     $animais_disponiveis = 0;
 
-    try {
-        $stmt_total = $pdo->query("SELECT COUNT(*) AS total FROM animais");
-        $total_animais = $stmt_total->fetch()->total;
-        
-        $stmt_disponiveis = $pdo->query("SELECT COUNT(*) AS total FROM animais WHERE status = 'disponivel'");
-        $animais_disponiveis = $stmt_disponiveis->fetch()->total;
+    // Total de animais
+    $sql_total = "SELECT COUNT(*) AS total FROM animais";
+    $resultado_total = mysqli_query($mysqli, $sql_total);
+    if ($resultado_total) {
+        $row = mysqli_fetch_assoc($resultado_total);
+        $total_animais = $row['total'];
+        mysqli_free_result($resultado_total);
+    }
 
-    } catch (PDOException $e) {
+    // Animais disponíveis
+    $sql_disponiveis = "SELECT COUNT(*) AS total FROM animais WHERE status = 'disponivel'";
+    $resultado_disponiveis = mysqli_query($mysqli, $sql_disponiveis);
+    if ($resultado_disponiveis) {
+        $row = mysqli_fetch_assoc($resultado_disponiveis);
+        $animais_disponiveis = $row['total'];
+        mysqli_free_result($resultado_disponiveis);
     }
 ?>
 
@@ -51,7 +60,11 @@
             <a href="index.php">Início</a> |
             <a href="animais/listar.php">Gerenciar Animais</a> |
             <a href="adocoes/listar.php">Gerenciar Adoções</a> |
-            <a href="../logout.php">Sair</a>
+            <?php if (is_logged_in()): ?>
+                <a href="../logout.php">Sair</a>
+            <?php else: ?>
+                <a href="../login.php">Login</a>
+            <?php endif; ?>
         </nav>
     </header>
 

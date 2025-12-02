@@ -1,74 +1,63 @@
 <?php
-    require_once 'conexao.php';
+require_once 'conexao.php';
+session_start();
 
-    session_start();
+// se já está logado, vai para admin
+if (isset($_SESSION['id_usuario'])) {
+    header('Location: admin/index.php');
+    exit;
+}
 
-    if (isset($_SESSION['user_id'])) {
-        header('Location: index.php');
-        exit;
-    }
+$erro = '';
 
-    $error = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email'] ?? '');
+    $senha = $_POST['senha'] ?? '';
 
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $username = $_POST['username'] ?? '';
-        $password = $_POST['password'] ?? '';
-        
-        if (!empty($username) && !empty($password)) {
-            include 'config/database.php';
-            
-            $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE username = ?");
-            $stmt->execute([$username]);
-            $user = $stmt->fetch();
-            
-            if ($user && password_verify($password, $user['password'])) {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['username'] = $user['username'];
-                $_SESSION['nome'] = $user['nome'];
-                
-                header('Location: index.php');
+    if ($email === '' || $senha === '') {
+        $erro = 'Preencha todos os campos.';
+    } else {
+        $sql = "SELECT id_usuario, nome_usuario, senha_hash, ativo FROM usuarios WHERE email_usuario = ? LIMIT 1";
+        $stmt = mysqli_prepare($mysqli, $sql);
+        mysqli_stmt_bind_param($stmt, 's', $email);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        if ($result && mysqli_num_rows($result) === 1) {
+            $user = mysqli_fetch_assoc($result);
+            if (!$user['ativo']) {
+                $erro = 'Conta inativa.';
+            } elseif (password_verify($senha, $user['senha_hash'])) {
+                $_SESSION['id_usuario'] = $user['id_usuario'];
+                $_SESSION['nome_usuario'] = $user['nome_usuario'];
+                header('Location: admin/index.php');
                 exit;
             } else {
-                $error = 'Usuário ou senha incorretos!';
+                $erro = 'Email ou senha inválidos.';
             }
         } else {
-            $error = 'Preencha todos os campos!';
+            $erro = 'Email ou senha inválidos.';
         }
+        mysqli_stmt_close($stmt);
     }
+}
 ?>
-
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+    <meta charset="utf-8">
     <title>Login - Pet Adoção</title>
 </head>
 <body>
-    <div class="login-box">
-        <h2 style="text-align: center;">Login Pet Adoção</h2>
-        
-        <?php if ($error): ?>
-            <div class="error"><?php echo $error; ?></div>
-        <?php endif; ?>
-        
-        <form method="POST">
-            <div class="form-group">
-                <label>Usuário:</label>
-                <input type="text" name="username" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Senha:</label>
-                <input type="password" name="password" required>
-            </div>
-            
-            <button type="submit">Entrar</button>
-        </form>
-        
-        <div class="info">
-            <strong>Credenciais para teste:</strong><br>
-            Usuário: admin<br>
-            Senha: password
-        </div>
-    </div>
+    <h1>Login</h1>
+    <?php if ($erro): ?><div style="color:red;"><?php echo htmlspecialchars($erro); ?></div><?php endif; ?>
+
+    <form method="POST" action="login.php">
+        <label>Email<br><input type="email" name="email" required></label><br>
+        <label>Senha<br><input type="password" name="senha" required></label><br>
+        <button type="submit">Entrar</button>
+    </form>
+
+    <p>Ainda não tem conta? <a href="registrar.php">Cadastre-se</a></p>
 </body>
 </html>

@@ -1,6 +1,7 @@
 <?php
-    require_once '../../verifica-login.php'; 
-    require_once '../../conexao.php'; 
+    require_once '../../conexao.php';
+    require_once '../../verifica-login.php';
+    require_login('../../login.php'); 
 
     $animais = [];
     $erro = '';
@@ -9,18 +10,17 @@
             FROM animais 
             ORDER BY data_cadastro DESC";
 
-   
-    if ($resultado = $mysqli->query($sql)) {
+    $resultado = mysqli_query($mysqli, $sql);
 
-        
-        $animais = $resultado->fetch_all(MYSQLI_ASSOC);
-        $resultado->free();
-
+    if ($resultado) {
+        while ($row = mysqli_fetch_assoc($resultado)) {
+            $animais[] = $row;
+        }
+        mysqli_free_result($resultado);
     } else {
-        $erro = "❌ Erro ao carregar a lista de animais: " . $mysqli->error;
+        $erro = "❌ Erro ao carregar a lista de animais: " . mysqli_error($mysqli);
     }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -71,18 +71,18 @@
                 <tbody>
                     <?php foreach ($animais as $animal): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($animal->id); ?></td>
-                            <td><?php echo htmlspecialchars($animal->nome); ?></td>
-                            <td><?php echo htmlspecialchars($animal->especie); ?></td>
-                            <td><?php echo htmlspecialchars($animal->raca); ?></td>
-                            <td><?php echo htmlspecialchars($animal->idade); ?></td>
-                            <td class="<?php echo ($animal->status == 'adotado' ? 'status-adotado' : 'status-disponivel'); ?>">
-                                <?php echo ucfirst(htmlspecialchars($animal->status)); ?>
+                            <td><?php echo htmlspecialchars($animal['id']); ?></td>
+                            <td><?php echo htmlspecialchars($animal['nome']); ?></td>
+                            <td><?php echo htmlspecialchars($animal['especie']); ?></td>
+                            <td><?php echo htmlspecialchars($animal['raca']); ?></td>
+                            <td><?php echo htmlspecialchars($animal['idade']); ?></td>
+                            <td class="<?php echo ($animal['status'] == 'adotado' ? 'status-adotado' : 'status-disponivel'); ?>">
+                                <?php echo ucfirst(htmlspecialchars($animal['status'])); ?>
                             </td>
-                            <td><?php echo date('d/m/Y', strtotime($animal->data_cadastro)); ?></td>
+                            <td><?php echo date('d/m/Y', strtotime($animal['data_cadastro'])); ?></td>
                             <td>
-                                <a href="editar.php?id=<?php echo $animal->id; ?>">Editar</a> |
-                                <a href="deletar.php?id=<?php echo $animal->id; ?>" onclick="return confirm('Tem certeza que deseja deletar este animal?');">Deletar</a>
+                                <a href="editar.php?id=<?php echo $animal['id']; ?>">Editar</a> |
+                                <a href="deletar.php?id=<?php echo $animal['id']; ?>" onclick="return confirm('Tem certeza que deseja deletar este animal?');">Deletar</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

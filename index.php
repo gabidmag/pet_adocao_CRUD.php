@@ -1,14 +1,19 @@
 <?php
-    require_once 'conexao.php'; 
+    require_once 'conexao.php';
+    require_once 'verifica-login.php'; 
 
-    
     $animais_destaque = [];
-    try {
-        $stmt = $pdo->query("SELECT id, nome, foto FROM animais WHERE status = 'disponivel' LIMIT 3");
-        $animais_destaque = $stmt->fetchAll();
-    } catch (PDOException $e) {
-    }
 
+    // Busca animais disponíveis
+    $sql = "SELECT id, nome, foto FROM animais WHERE status = 'disponivel' LIMIT 3";
+    $resultado = mysqli_query($mysqli, $sql);
+
+    if ($resultado) {
+        while ($row = mysqli_fetch_assoc($resultado)) {
+            $animais_destaque[] = $row;
+        }
+        mysqli_free_result($resultado);
+    }
 ?>
 
 <!DOCTYPE html>
@@ -20,13 +25,17 @@
 </head>
 <body>
     <header>
-        <nav>
-            <h1>Pet Adoção</h1>
-            <a href="index.php">Início</a>
-            <a href="public/animais.php">Nossos Pets</a>
-            <a href="login.php">Área Restrita</a> 
-        </nav>
-    </header>
+            <nav>
+                <h1>Pet Adoção</h1>
+                <a href="index.php">Início</a>
+                <a href="public/animais.php">Nossos Pets</a>
+                <?php if (is_logged_in()): ?>
+                    <a href="logout.php">Sair</a>
+                <?php else: ?>
+                    <a href="login.php">Área Restrita</a>
+                <?php endif; ?>
+            </nav>
+        </header>
 
     <main class="container">
         <h2>Adote, Não Compre.</h2>

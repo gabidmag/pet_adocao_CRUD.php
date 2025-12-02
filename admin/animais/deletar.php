@@ -1,63 +1,45 @@
 <?php
-    require_once '../../verifica-login.php'; 
-    require_once '../../conexao.php'; 
+    require_once '../../conexao.php';
+    require_once '../../verifica-login.php';
+    require_login('../../login.php'); 
 
-    $animal_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+    $animal_id = $_GET['id'] ?? 0;
 
     if (!$animal_id) {
         header('Location: listar.php');
         exit();
     }
 
-    // 1. Busca o nome da foto antes de deletar o registro 
-    $animal = null;
+    // 1. Busca o nome da foto
+    $sql_select = "SELECT foto FROM animais WHERE id = $animal_id";
+    $resultado = mysqli_query($mysqli, $sql_select);
 
-    $stmt_select = $mysqli->prepare("SELECT foto FROM animais WHERE id = ?");
-    if ($stmt_select) {
-        $stmt_select->bind_param("i", $animal_id);
-
-        if ($stmt_select->execute()) {
-            $resultado = $stmt_select->get_result();
-            $animal = $resultado->fetch_object();
-            $resultado->free();
-        } else {
-            $_SESSION['mensagem_erro'] = "Erro ao buscar animal: " . $stmt_select->error;
-            $stmt_select->close();
-            header('Location: listar.php');
-            exit();
-        }
-
-        $stmt_select->close();
+    if ($resultado && mysqli_num_rows($resultado) > 0) {
+        $animal = mysqli_fetch_assoc($resultado);
+        $foto_nome = $animal['foto'];
     } else {
-        $_SESSION['mensagem_erro'] = "Erro ao preparar consulta: " . $mysqli->error;
+        $_SESSION['mensagem_erro'] = "Animal não encontrado";
         header('Location: listar.php');
         exit();
     }
 
-    // 2. Deleta o registro do banco de dados
-    $stmt_delete = $mysqli->prepare("DELETE FROM animais WHERE id = ?");
-    if ($stmt_delete) {
-        $stmt_delete->bind_param("i", $animal_id);
+    // 2. Deleta o registro
+    $sql_delete = "DELETE FROM animais WHERE id = $animal_id";
 
-        if ($stmt_delete->execute()) {
-
-            // 3. Deleta o arquivo da foto do servidor 
-            if ($animal && $animal->foto) {
-                $foto_caminho = '../../uploads/' . $animal->foto;
-                if (file_exists($foto_caminho)) {
-                    unlink($foto_caminho);
-                }
+    if (mysqli_query($mysqli, $sql_delete)) {
+        
+        // 3. Deleta a foto
+        if (!empty($foto_nome)) {
+            $foto_caminho = '../../uploads/' . $foto_nome;
+            if (file_exists($foto_caminho)) {
+                unlink($foto_caminho);
             }
-
-            $_SESSION['mensagem_sucesso'] = "Animal deletado com sucesso!";
-
-        } else {
-            $_SESSION['mensagem_erro'] = "Erro ao deletar animal: " . $stmt_delete->error;
         }
-
-        $stmt_delete->close();
+        
+        $_SESSION['mensagem_sucesso'] = "Animal deletado com sucesso!";
+        
     } else {
-        $_SESSION['mensagem_erro'] = "Erro ao preparar exclusão: " . $mysqli->error;
+        $_SESSION['mensagem_erro'] = "Erro ao deletar: " . mysqli_error($mysqli);
     }
 
     header('Location: listar.php');

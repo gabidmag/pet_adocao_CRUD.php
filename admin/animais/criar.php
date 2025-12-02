@@ -1,88 +1,62 @@
 <?php
-    
-    require_once '../../verifica-login.php'; 
-    require_once '../../conexao.php'; 
+    require_once '../../conexao.php';
+    require_once '../../verifica-login.php';
+    require_login('../../login.php'); 
 
     $mensagem = '';
     $upload_dir = '../../uploads/'; 
 
-    // Garante que a pasta de upload exista
+    // Cria a pasta se não existir
     if (!is_dir($upload_dir)) {
         mkdir($upload_dir, 0777, true);
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
-        // 1. Coleta e sanitiza os dados do formulário
-        $nome      = filter_input(INPUT_POST, 'nome', FILTER_SANITIZE_STRING);
-        $especie   = filter_input(INPUT_POST, 'especie', FILTER_SANITIZE_STRING);
-        $raca      = filter_input(INPUT_POST, 'raca', FILTER_SANITIZE_STRING);
-        $idade     = filter_input(INPUT_POST, 'idade', FILTER_VALIDATE_INT);
-        $descricao = filter_input(INPUT_POST, 'descricao', FILTER_SANITIZE_STRING);
-        $status    = 'disponivel'; 
-
+        // Pega dados do formulário
+        $nome = $_POST['nome'] ?? '';
+        $especie = $_POST['especie'] ?? '';
+        $raca = $_POST['raca'] ?? '';
+        $idade = $_POST['idade'] ?? 0;
+        $descricao = $_POST['descricao'] ?? '';
+        $status = 'disponivel';
+        
         $foto_nome = null;
-        $caminho_completo = null;
-
-        // 2. Lógica para upload de imagem
-        if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+        
+        // Upload da foto
+        if (!empty($_FILES['foto']['name']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
             $extensao = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
-            $foto_nome = uniqid() . '.' . $extensao; // Nome único
+            $foto_nome = uniqid() . '.' . $extensao;
             $caminho_completo = $upload_dir . $foto_nome;
-
-            $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-            if (in_array($_FILES['foto']['type'], $allowed_types) && $_FILES['foto']['size'] < 5000000) { // Limite de 5MB
-                if (!move_uploaded_file($_FILES['foto']['tmp_name'], $caminho_completo)) {
-                    $mensagem = "Erro ao fazer upload da foto. Verifique as permissões da pasta 'uploads'.";
-                }
+            
+            // Tipos permitidos
+            $tipos_permitidos = ['image/jpeg', 'image/png', 'image/gif'];
+            
+            if (in_array($_FILES['foto']['type'], $tipos_permitidos) && $_FILES['foto']['size'] < 5000000) {
+                move_uploaded_file($_FILES['foto']['tmp_name'], $caminho_completo);
             } else {
-                $mensagem = "Arquivo inválido. Apenas JPEG, PNG, GIF e tamanho máximo de 5MB.";
+                $mensagem = "❌ Foto inválida. Apenas JPEG, PNG, GIF e máximo 5MB.";
             }
         }
-
-        // 3. Validação e Inserção no DB
-        if (empty($nome) || empty($especie) || $idade === false) {
-            $mensagem = "❌ Por favor, preencha os campos obrigatórios (Nome, Espécie e Idade).";
-        } else if (empty($mensagem)) {
-
-            // Usando MySQLi (prepared statement)
+        
+        // Valida e insere
+        if (empty($nome) || empty($especie)) {
+            $mensagem = "❌ Preencha Nome e Espécie.";
+        } elseif (empty($mensagem)) {
+            
+            // Query de inserção
             $sql = "INSERT INTO animais (nome, especie, raca, idade, descricao, foto, status) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-            // Prepara a query
-            $stmt = $mysqli->prepare($sql);
-
-            if ($stmt === false) {
-                $mensagem = "❌ Erro ao preparar a query: " . $mysqli->error;
-
-                // Se deu erro e já tinha feito upload da foto, apaga
-                if ($foto_nome && file_exists($caminho_completo)) {
-                    unlink($caminho_completo);
-                }
+                    VALUES ('$nome', '$especie', '$raca', $idade, '$descricao', '$foto_nome', '$status')";
+            
+            if (mysqli_query($mysqli, $sql)) {
+                $mensagem = "✅ Animal $nome cadastrado com sucesso!";
             } else {
-                $stmt->bind_param(
-                    "sssisss",
-                    $nome,
-                    $especie,
-                    $raca,
-                    $idade,
-                    $descricao,
-                    $foto_nome,
-                    $status
-                );
-
-                if ($stmt->execute()) {
-                    $mensagem = "✅ Animal **" . htmlspecialchars($nome) . "** cadastrado com sucesso!";
-                } else {
-                    $mensagem = "❌ Erro ao cadastrar animal: " . $stmt->error;
-                    
-                    // Se falhar o insert, apagar a foto enviada
-                    if ($foto_nome && file_exists($caminho_completo)) {
-                        unlink($caminho_completo);
-                    }
+                $mensagem = "❌ Erro ao cadastrar: " . mysqli_error($mysqli);
+                
+                // Apaga foto se deu erro
+                if ($foto_nome && file_exists($upload_dir . $foto_nome)) {
+                    unlink($upload_dir . $foto_nome);
                 }
-
-                $stmt->close();
             }
         }
     }

@@ -1,21 +1,20 @@
 <?php
-// conexao.php - JÁ EXISTE, só verificar se está correto
+    // conexao.php - Configuração do banco de dados
 
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'adocao.pets');  // Ou o nome do seu banco
-define('DB_USER', 'root');         
-define('DB_PASS', '');             
+    $host = 'localhost:3306';
+    $usuario = 'root';
+    $senha = '';
+    $banco = 'adocao_animais';
+    
+    // Conecta ao banco
+    $mysqli = mysqli_connect($host, $usuario, $senha, $banco);
 
-try {
-    $pdo = new PDO(
-        "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8", 
-        DB_USER, 
-        DB_PASS
-    );
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
-} catch (PDOException $e) {
-    echo "❌ Erro na Conexão: " . $e->getMessage();
-    exit();
-}
+    // Verifica se conectou
+    if (!$mysqli) {
+        echo "❌ Erro na Conexão: " . mysqli_connect_error();
+        exit();
+    }
+
+    // Define o charset
+    mysqli_set_charset($mysqli, "utf8");
 ?>

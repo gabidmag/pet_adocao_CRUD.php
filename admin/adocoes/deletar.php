@@ -1,8 +1,10 @@
 <?php
-    require_once '../../verifica-login.php'; 
-    require_once '../../conexao.php'; 
+    require_once '../../conexao.php';
+    require_once '../../verifica-login.php';
+    require_login('../../login.php'); 
 
-    $pedido_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+    // Pega o ID do pedido
+    $pedido_id = $_GET['id'] ?? 0;
 
     if (!$pedido_id) {
         header('Location: listar.php');
@@ -10,20 +12,12 @@
     }
 
     // Deletar o pedido
-    $stmt_delete = $mysqli->prepare("DELETE FROM adocoes WHERE id = ?");
-    
-    if ($stmt_delete) {
-        $stmt_delete->bind_param("i", $pedido_id);
+    $sql = "DELETE FROM adocoes WHERE id = $pedido_id";
 
-        if ($stmt_delete->execute()) {
-            $_SESSION['mensagem_sucesso'] = "Pedido de adoção deletado com sucesso!";
-        } else {
-            $_SESSION['mensagem_erro'] = "Erro ao deletar pedido: " . $stmt_delete->error;
-        }
-
-        $stmt_delete->close();
+    if (mysqli_query($mysqli, $sql)) {
+        $_SESSION['mensagem_sucesso'] = "Pedido de adoção deletado com sucesso!";
     } else {
-        $_SESSION['mensagem_erro'] = "Erro ao preparar exclusão: " . $mysqli->error;
+        $_SESSION['mensagem_erro'] = "Erro ao deletar pedido: " . mysqli_error($mysqli);
     }
 
     header('Location: listar.php');
