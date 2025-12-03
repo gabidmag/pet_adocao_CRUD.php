@@ -42,22 +42,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="utf-8">
-    <title>Login - Pet Adoção</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - PetAdopt</title>
+    <!-- Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Seu CSS Moderno -->
+    <link rel="stylesheet" href="public/css/style.css">
 </head>
-<body>
-    <h1>Login</h1>
-    <?php if ($erro): ?><div style="color:red;"><?php echo htmlspecialchars($erro); ?></div><?php endif; ?>
+<body class="login-page">
 
-    <form method="POST" action="login.php">
-        <label>Email<br><input type="email" name="email" required></label><br>
-        <label>Senha<br><input type="password" name="senha" required></label><br>
-        <button type="submit">Entrar</button>
-    </form>
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="fa-solid fa-user-circle"></i>
+            </div>
+            <h2>Bem-vindo de volta!</h2>
+            <p>Entre para gerenciar as adoções.</p>
+        </div>
 
-    <p>Ainda não tem conta? <a href="registrar.php">Cadastre-se</a></p>
+        <!-- Exibe mensagem de erro se o PHP detectou algo -->
+        <?php if (!empty($erro)): ?>
+            <div class="alert-error">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <?php echo htmlspecialchars($erro); ?>
+            </div>
+        <?php endif; ?>
+
+        <form method="POST" action="login.php" class="floating-label-form">
+    
+          <!-- Campo de Email -->
+        <div class="input-group">
+        <input type="email" id="email" name="email" placeholder=" " required>
+        <label for="email">
+            <i class="fa-solid fa-envelope"></i> Email
+        </label>
+    </div>
+
+    <!-- Campo de Senha -->
+    <div class="input-group">
+        <input type="password" id="senha" name="senha" placeholder=" " required>
+        <label for="senha">
+            <i class="fa-solid fa-lock"></i> Senha
+        </label>
+    </div>
+
+    <button type="submit" class="btn-login">Entrar</button>
+</form>
+
+<div class="login-footer">
+    <a href="index.php"><i class="fa-solid fa-arrow-left"></i> Voltar ao Site</a>
+    <span> | </span>
+    <a href="registrar.php">Criar Conta</a>
+</div>
+
 </body>
 </html>

@@ -4,7 +4,7 @@
     $host = 'localhost:3306';
     $usuario = 'root';
     $senha = '';
-    $banco = 'adocao_animais';
+    $banco = 'petadocao_db';
     
     // Conecta ao banco
     $mysqli = mysqli_connect($host, $usuario, $senha, $banco);

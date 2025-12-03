@@ -1,0 +1,989 @@
+/* =========================================
+   CONFIGURAÇÕES GLOBAIS
+   ========================================= */
+:root {
+    --primary-color: #2c7bac;
+    --primary-dark: #4160be;
+    --secondary-color: #0f4ab6;
+    --text-dark: #333;
+    --text-light: #777;
+    --bg-light: #F0FAFD;
+    --bg-white: #FFFFFF;
+    --border-color: #E0E0E0;
+
+    --tag-dog-bg: #DBEAFE; 
+    --tag-dog-text: #1E40AF;
+
+    --tag-cat-bg: #FCE7F3; 
+    --tag-cat-text: #9D174D;
+
+    --font-family: 'Segoe UI', 'Roboto', sans-serif;
+
+    --border-radius: 12px;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================================
+   TEMA ESCURO
+   ========================================= */
+body.dark-theme {
+    --secondary-color: #0d8f98;
+    --text-dark: #e0e0e0;
+    --text-light: #a0a0a0;
+    --bg-light: #121212;
+    --bg-white: #1e1e1e;
+    --border-color: #444;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+
+    background: linear-gradient(120deg, #0f172a 0%, #1e293b 50%, #000000 100%) !important;
+    background-attachment: fixed !important;
+    background-size: cover !important;
+}
+
+/* =========================================
+   RESET
+   ========================================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    background: linear-gradient(120deg, #d0f5ff 0%, #b6dabee6 50%, #f4ffd4 100%);
+    background-attachment: fixed;
+    background-size: 200% 200%;
+    animation: gradientBG 15s ease infinite;
+
+    color: var(--text-dark);
+    line-height: 1.6;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* =========================================
+   CAMADAS (Z-INDEX)
+   ========================================= */
+.navbar {
+    background-color: var(--bg-white); /* Garante que ela tenha cor de fundo */
+    padding: 1rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Sombra um pouco mais forte */
+    
+    /* AQUI ESTÁ A MÁGICA: */
+    position: sticky; /* Faz ela grudar no topo */
+    top: 0;           /* Encostada no teto */
+    z-index: 99999;   /* Número bem alto para ficar na frente de TUDO */
+}
+
+/* =========================================
+   FUNDO ANIMADO
+   ========================================= */
+.floating-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.float-icon {
+    position: absolute;
+    bottom: -50px;
+    color: rgba(54, 162, 192, 0.15);
+    animation: floatUp linear infinite;
+}
+
+body.dark-theme .float-icon {
+    color: rgba(255, 255, 255, 0.05);
+}
+
+.float-icon:nth-child(even) {
+    color: rgba(244, 114, 182, 0.15);
+}
+
+body.dark-theme .float-icon:nth-child(even) {
+    color: rgba(255, 255, 255, 0.08);
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+}
+
+/* =========================================
+   LINKS E NAV
+   ========================================= */
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+.navbar {
+    background-color: var(--bg-white);
+    padding: 1rem 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.nav-links a:hover {
+    color: var(--primary-color);
+}
+
+.nav-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--text-dark);
+}
+
+
+.nav-links .btn-details:hover {
+    color: #ffffff !important; 
+    background-color: var(--primary-dark); 
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 12px rgba(54, 162, 192, 0.4); 
+}
+
+
+.nav-links a[style*="background-color"]:hover {
+    color: #ffffff !important;
+    filter: brightness(0.9); 
+}
+
+/* =========================================
+   HERO & GRID
+   ========================================= */
+.hero {
+    padding: 5rem 1rem;
+    text-align: center;
+    background: transparent;
+}
+
+.hero h1 {
+    font-size: 2.8rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+
+.highlight {
+    color: var(--primary-color);
+}
+
+.search-bar-container {
+    display: flex;
+    justify-content: center;
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+}
+
+.search-bar-container input {
+    flex-grow: 1;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 50px 0 0 50px;
+    background-color: var(--bg-white);
+    color: var(--text-dark);
+    outline: none;
+}
+
+.search-btn {
+    padding: 0 1.5rem;
+    border: none;
+    background-color: var(--primary-color);
+    color: #fff;
+    border-radius: 0 50px 50px 0;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 2rem;
+}
+
+.stat-item h3 {
+    font-size: 2rem;
+    color: var(--primary-color);
+}
+
+.pets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.pet-card {
+    background: var(--bg-white);
+    position: relative; 
+    z-index: 10;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.pet-card:hover {
+    transform: translateY(-10px);
+}
+
+.card-content {
+    padding: 1.5rem;
+}
+
+.pet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.pet-header h2 {
+    font-size: 1.4rem;
+    color: var(--text-dark);
+}
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.badge.dog {
+    background: var(--tag-dog-bg);
+    color: var(--tag-dog-text);
+}
+
+.badge.cat {
+    background: var(--tag-cat-bg);
+    color: var(--tag-cat-text);
+}
+
+.pet-details {
+    display: flex;
+    gap: 15px;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.location {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.price {
+    color: var(--primary-color);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.btn-details {
+    background: var(--primary-color);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* =========================================
+   LOGIN PAGE
+   ========================================= */
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-light);
+}
+
+/* O Cartão Branco */
+.login-card {
+    background-color: var(--bg-white);
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+}
+
+/* Cabeçalho */
+.login-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+.login-header h2 {
+    color: var(--secondary-color);
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+.login-header p {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+}
+
+/* --- ESTILO DO FORMULÁRIO COM LABEL FLUTUANTE --- */
+.floating-label-form .input-group {
+    position: relative;
+    margin-bottom: 2rem; /* Mais espaço entre os campos */
+}
+
+/* O input fica transparente e com borda só embaixo */
+.floating-label-form input {
+    width: 100%;
+    padding: 10px 5px;
+    font-size: 1rem;
+    color: var(--text-dark);
+    border: none;
+    border-bottom: 2px solid var(--border-color);
+    background-color: transparent;
+    outline: none;
+    position: relative;
+    z-index: 10;
+}
+
+/* O Label (Email/Senha) */
+.floating-label-form label {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    font-size: 1rem;
+    color: var(--text-light);
+    pointer-events: none; /* Permite clicar através dele */
+    transition: 0.2s ease all;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* A MÁGICA: Quando o input está focado OU preenchido, o label sobe */
+.floating-label-form input:focus ~ label,
+.floating-label-form input:not(:placeholder-shown) ~ label {
+    top: -20px;
+    font-size: 0.8rem;
+    color: var(--primary-color);
+}
+
+/* Linha azul animada que aparece embaixo */
+.floating-label-form input:focus {
+    border-bottom-color: var(--primary-color);
+}
+
+/* Botão de Entrar */
+.btn-login {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 20px;
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(54, 162, 192, 0.4);
+}
+
+/* Rodapé */
+.login-footer {
+    margin-top: 2rem;
+    font-size: 0.9rem;
+}
+
+.login-footer a {
+    color: var(--text-light);
+    font-weight: 500;
+}
+.login-footer a:hover {
+    color: var(--primary-color);
+}
+
+/* =========================================
+   ESTILOS DO PAINEL ADMINISTRATIVO (TABELAS)
+   ========================================= */
+
+.admin-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: var(--bg-white);
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.btn-add {
+    background-color: #10B981; /* Verde */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+}
+.btn-add:hover { background-color: #059669; transform: translateY(-2px); }
+
+/* --- TABELA MODERNA --- */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.admin-table th {
+    text-align: left;
+    padding: 15px;
+    background-color: var(--bg-light);
+    color: var(--secondary-color);
+    font-weight: 700;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.admin-table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+    color: var(--text-dark);
+}
+
+.admin-table tr:hover {
+    background-color: rgba(54, 162, 192, 0.05); /* Azulzinho bem claro ao passar o mouse */
+}
+
+/* Imagem na tabela */
+.thumb-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--border-color);
+}
+
+/* Badges de Status */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+.status-badge.disponivel { background-color: #D1FAE5; color: #065F46; }
+.status-badge.adotado { background-color: #DBEAFE; color: #1E40AF; }
+.status-badge.indisponivel { background-color: #FEE2E2; color: #991B1B; }
+
+/* Botões de Ação */
+.action-btn {
+    margin-right: 5px;
+    color: var(--text-light);
+    font-size: 1.1rem;
+    transition: 0.2s;
+}
+.action-btn:hover { color: var(--primary-color); }
+.action-btn.delete:hover { color: #EF4444; }
+
+/* =========================================
+   ESTILOS DO PAINEL ADMINISTRATIVO
+   ========================================= */
+
+.admin-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+/* Cabeçalho das Páginas Admin */
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    background-color: var(--bg-white);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.admin-header h2 { color: var(--secondary-color); margin: 0; }
+
+/* Botão de Adicionar (Verde) */
+.btn-add {
+    background-color: #10B981;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+.btn-add:hover { background-color: #059669; }
+
+/* --- TABELA DE LISTAGEM --- */
+.table-responsive {
+    background-color: var(--bg-white);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden; /* Arredonda cantos */
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th {
+    background-color: var(--bg-light);
+    color: var(--secondary-color);
+    padding: 15px;
+    text-align: left;
+    font-weight: 700;
+}
+
+.admin-table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-dark);
+}
+
+.admin-table tr:hover { background-color: rgba(54, 162, 192, 0.05); }
+
+/* Pequena foto na tabela */
+.thumb-img {
+    width: 50px; height: 50px; border-radius: 50%; object-fit: cover;
+    border: 2px solid var(--border-color);
+}
+
+/* Ações (Editar/Excluir) */
+.action-links a { margin-right: 10px; font-weight: bold; font-size: 0.9rem; }
+.edit-btn { color: var(--primary-color); }
+.delete-btn { color: #EF4444; }
+
+/* --- FORMULÁRIO DE CADASTRO (CRIAR) --- */
+.form-card {
+    background-color: var(--bg-white);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.form-group { margin-bottom: 20px; }
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--bg-light);
+    font-size: 1rem;
+    color: var(--text-dark);
+    outline: none;
+}
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(54, 162, 192, 0.1);
+}
+
+.form-actions {
+    margin-top: 30px;
+    display: flex;
+    gap: 15px;
+}
+
+.btn-cancel {
+    background-color: #EF4444;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* =========================================
+   ESTILOS DO DASHBOARD (HOME ADMIN)
+   ========================================= */
+
+/* Garante fundo limpo no admin */
+body {
+    background-color: var(--bg-light) !important; /* Força o azulzinho claro */
+}
+
+.dashboard-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Card de Boas Vindas */
+.welcome-banner {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 40px;
+    border-radius: 16px;
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 20px rgba(54, 162, 192, 0.2);
+}
+
+.welcome-text h2 { font-size: 2rem; margin-bottom: 10px; color: white; }
+.welcome-text p { font-size: 1.1rem; opacity: 0.9; color: white; }
+
+/* Grid de Estatísticas */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.stat-card {
+    background: var(--bg-white);
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-color: var(--primary-color);
+}
+
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.stat-icon {
+    width: 50px; height: 50px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+}
+
+/* Cores dos Ícones */
+.icon-blue { background-color: #E0F2FE; color: var(--primary-color); }
+.icon-green { background-color: #D1FAE5; color: #10B981; }
+.icon-orange { background-color: #FEF3C7; color: #F59E0B; }
+.icon-purple { background-color: #F3E8FF; color: #8B5CF6; }
+
+.stat-number { font-size: 2.5rem; font-weight: 800; color: var(--text-dark); line-height: 1; }
+.stat-label { font-size: 0.9rem; color: var(--text-light); font-weight: 600; text-transform: uppercase; margin-top: 5px; }
+
+.card-action {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-link {
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: 0.2s;
+}
+
+/* Cores dos Links */
+.link-blue { color: var(--primary-color); }
+.link-green { color: #10B981; }
+.link-orange { color: #F59E0B; }
+.link-blue:hover, .link-green:hover, .link-orange:hover { opacity: 0.7; gap: 8px; }
+
+/* =========================================
+   PÁGINA DE DETALHES DO PET
+   ========================================= */
+
+.detail-container {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr; /* Coluna da imagem menor, info maior */
+    gap: 50px;
+    max-width: 1100px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: var(--bg-white);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+}
+
+.detail-image img {
+    width: 100%;
+    height: 100%;
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+.detail-header h1 { font-size: 2.5rem; color: var(--secondary-color); margin: 0; }
+
+.detail-breed {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--bg-light);
+    padding: 10px;
+    border-radius: 8px;
+    color: var(--text-dark);
+}
+
+.info-item i {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+.detail-description h3 {
+    margin-bottom: 10px;
+    color: var(--secondary-color);
+}
+.detail-description p {
+    color: var(--text-light);
+    line-height: 1.7;
+}
+
+.detail-adoption {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.taxa-label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    display: block;
+}
+
+/* Media Query para telas menores (celular) */
+@media (max-width: 768px) {
+    .detail-container {
+        grid-template-columns: 1fr; /* Uma coluna só */
+        gap: 30px;
+    }
+}
+
+/* =========================================
+   PÁGINA DE DETALHES DO PET
+   ========================================= */
+
+.detail-container {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr; /* Coluna da imagem menor, info maior */
+    gap: 50px;
+    max-width: 1100px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: var(--bg-white);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.detail-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    max-height: 500px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+.detail-header h1 { font-size: 2.5rem; color: var(--secondary-color); margin: 0; }
+
+.detail-breed {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--bg-light);
+    padding: 10px;
+    border-radius: 8px;
+    color: var(--text-dark);
+}
+
+.info-item i {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+.detail-description h3 {
+    margin-bottom: 10px;
+    color: var(--secondary-color);
+}
+.detail-description p {
+    color: var(--text-light);
+    line-height: 1.7;
+}
+
+.detail-adoption {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.taxa-label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    display: block;
+}
+
+/* Deixa a página responsiva em telas menores (celular) */
+@media (max-width: 768px) {
+    .detail-container {
+        grid-template-columns: 1fr; /* Uma coluna só */
+        gap: 30px;
+    }
+}

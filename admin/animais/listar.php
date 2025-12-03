@@ -1,101 +1,131 @@
 <?php
-    require_once '../../conexao.php';
-    require_once '../../verifica-login.php';
-    require_login('../../login.php'); 
+// Caminhos relativos para sair da pasta admin/animais/
+require_once '../../conexao.php';
+require_once '../../verifica-login.php';
 
-    $animais = [];
-    $erro = '';
-
-    $sql = "SELECT id, nome, especie, raca, idade, status, data_cadastro 
-            FROM animais 
-            ORDER BY data_cadastro DESC";
-
-    $resultado = mysqli_query($mysqli, $sql);
-
-    if ($resultado) {
-        while ($row = mysqli_fetch_assoc($resultado)) {
-            $animais[] = $row;
-        }
-        mysqli_free_result($resultado);
-    } else {
-        $erro = "❌ Erro ao carregar a lista de animais: " . mysqli_error($mysqli);
-    }
+// Busca os animais ordenados pelo ID decrescente (mais novos primeiro)
+$sql = "SELECT * FROM animais ORDER BY id DESC";
+$resultado = mysqli_query($mysqli, $sql);
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Lista de Animais - Área Administrativa</title>
-    <link rel="stylesheet" href="../../public/css/style.css"> 
-    <style>
-        /* Estilos básicos para a tabela, se não estiverem no style.css */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .status-adotado { color: red; font-weight: bold; }
-        .status-disponivel { color: green; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Animais</title>
+    
+    <!-- Ícones FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- SEU CSS MODERNO -->
+    <link rel="stylesheet" href="../../public/css/style.css">
 </head>
 <body>
-    <header>
-        <h1>Painel Administrativo</h1>
-        <nav>
-            <a href="../index.php">Início</a> |
-            <a href="criar.php">Cadastrar Novo Animal</a> |
-            <a href="../../logout.php">Sair</a>
-        </nav>
-    </header>
 
-    <main>
-        <h2>Lista de Animais Cadastrados</h2>
+    <!-- Navbar do Admin -->
+    <nav class="navbar">
+        <div class="logo"><i class="fa-solid fa-shield-dog"></i> Painel Admin</div>
+        <div class="nav-actions">
+            <a href="../index.php" style="text-decoration:none; color:var(--text-dark); font-weight:500;">
+                <i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard
+            </a>
+        </div>
+    </nav>
 
-        <?php if ($erro): ?>
-            <div class='alerta erro'><?php echo $erro; ?></div>
-        <?php endif; ?>
+    <div class="admin-container">
+        
+        <!-- Cabeçalho da Tabela -->
+        <div class="admin-header">
+            <div>
+                <h2 style="font-size: 1.5rem; color: var(--secondary-color);">Animais Cadastrados</h2>
+                <p style="color: var(--text-light); font-size: 0.9rem;">Gerencie os pets disponíveis para adoção.</p>
+            </div>
+            <a href="criar.php" class="btn-add">
+                <i class="fa-solid fa-plus"></i> Novo Animal
+            </a>
+        </div>
 
-        <?php if (count($animais) > 0): ?>
-            <table>
+        <!-- Tabela Estilizada -->
+        <div class="table-responsive">
+            <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
+                        <th width="80">Foto</th>
                         <th>Nome</th>
                         <th>Espécie</th>
                         <th>Raça</th>
                         <th>Idade</th>
                         <th>Status</th>
-                        <th>Data Cadastro</th>
-                        <th>Ações</th>
+                        <th width="120">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($animais as $animal): ?>
+                    <?php while ($row = mysqli_fetch_assoc($resultado)): ?>
+                        <?php
+                            // Lógica para exibir a imagem corretamente
+                            $foto = $row['foto'];
+                            
+                            // Se não tem foto, usa placeholder
+                            if(empty($foto)) {
+                                $imgSrc = 'https://placehold.co/100x100?text=Sem+Foto';
+                            } 
+                            // Se já for um link (http), usa ele
+                            elseif (strpos($foto, 'http') === 0) {
+                                $imgSrc = $foto;
+                            } 
+                            // Se for arquivo local, aponta para a pasta public/uploads
+                            else {
+                                $imgSrc = '../../public/uploads/' . basename($foto);
+                            }
+                        ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($animal['id']); ?></td>
-                            <td><?php echo htmlspecialchars($animal['nome']); ?></td>
-                            <td><?php echo htmlspecialchars($animal['especie']); ?></td>
-                            <td><?php echo htmlspecialchars($animal['raca']); ?></td>
-                            <td><?php echo htmlspecialchars($animal['idade']); ?></td>
-                            <td class="<?php echo ($animal['status'] == 'adotado' ? 'status-adotado' : 'status-disponivel'); ?>">
-                                <?php echo ucfirst(htmlspecialchars($animal['status'])); ?>
-                            </td>
-                            <td><?php echo date('d/m/Y', strtotime($animal['data_cadastro'])); ?></td>
                             <td>
-                                <a href="editar.php?id=<?php echo $animal['id']; ?>">Editar</a> |
-                                <a href="deletar.php?id=<?php echo $animal['id']; ?>" onclick="return confirm('Tem certeza que deseja deletar este animal?');">Deletar</a>
+                                <img src="<?php echo $imgSrc; ?>" alt="Pet" class="thumb-img">
+                            </td>
+                            
+                            <td>
+                                <strong><?php echo htmlspecialchars($row['nome']); ?></strong>
+                            </td>
+                            
+                            <td><?php echo htmlspecialchars($row['especie']); ?></td>
+                            
+                            <td><?php echo htmlspecialchars($row['raca'] ?? 'SRD'); ?></td>
+                            
+                            <!-- AQUI ESTAVA O ERRO: Mudamos para idade_anos -->
+                            <td>
+                                <?php 
+                                    $anos = $row['idade_anos'] ?? 0;
+                                    echo $anos . ($anos == 1 ? ' ano' : ' anos');
+                                ?>
+                            </td>
+
+                            <td>
+                                <?php 
+                                    $status = $row['status'] ?? 'disponivel';
+                                    $classe = '';
+                                    if($status == 'disponivel') $classe = 'disponivel';
+                                    if($status == 'adotado') $classe = 'adotado';
+                                ?>
+                                <span class="status-badge <?php echo $classe; ?>">
+                                    <?php echo ucfirst($status); ?>
+                                </span>
+                            </td>
+                            
+                            <td class="action-links">
+                                <a href="editar.php?id=<?php echo $row['id']; ?>" class="edit-btn" title="Editar">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+                                <a href="deletar.php?id=<?php echo $row['id']; ?>" class="delete-btn" title="Excluir" onclick="return confirm('Tem certeza que deseja apagar o registro de <?php echo $row['nome']; ?>?');">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
+                    <?php endwhile; ?>
                 </tbody>
             </table>
-        <?php else: ?>
-            <p>Nenhum animal cadastrado ainda. <a href="criar.php">Cadastre um novo</a>.</p>
-        <?php endif; ?>
+        </div>
+    </div>
 
-    </main>
-
-    <footer>
-        <p>&copy; <?php echo date("Y"); ?> Pet Adoção CRUD</p>
-    </footer>
 </body>
 </html>
