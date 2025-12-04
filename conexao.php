@@ -1,6 +1,6 @@
 <?php
     
-    $host = 'localhost:3306';
+    $host = 'localhost:3310';
     $usuario = 'root';
     $senha = '';
     $banco = 'petadocao_db';
