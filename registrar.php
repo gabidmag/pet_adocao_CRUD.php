@@ -52,34 +52,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Sistema de Adoção</title>
+    <title>Criar Conta - PetAdopt</title>
+    <!-- Ícones e CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="public/css/style.css">
 </head>
-<body>
-    <div class="login-container">
-        <h1>🐾 Sistema de Adoção</h1>
-        <?php if ($erro): ?><div style="color:red;"><?php echo htmlspecialchars($erro); ?></div><?php endif; ?>
-        <?php if ($sucesso): ?><div style="color:green;"><?php echo htmlspecialchars($sucesso); ?></div><?php endif; ?>
-        <p class="subtitle">Faça login para continuar</p>
-            
-        <form method="POST" action="registrar.php">
-            <div class="form-group">
-                <label for="nome_usuario">Nome:</label>
-                <input type="text" id="nome" name="nome" required>
-            
-            <div class="form-group">
-                <label for="email_usuario">Email:</label>
-                <input type="email_" id="email" name="email" required>
+<body class="login-page">
+
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="fa-solid fa-user-plus"></i>
             </div>
-                
-            <div class="form-group">
-                <label for="senha">Senha:</label>
-                <input type="password" id="senha" name="senha" required>
+            <h2>Crie sua Conta Admin</h2>
+            <p>Preencha os dados para registrar-se.</p>
+        </div>
+
+        <!-- Mensagens de Sucesso ou Erro -->
+        <?php if (!empty($erro)): ?>
+            <div class="alert-error">
+                <i class="fa-solid fa-circle-exclamation"></i> <?php echo htmlspecialchars($erro); ?>
             </div>
-                
-            <button type="submit">Entrar</button>
+        <?php endif; ?>
+
+        <?php if (!empty($sucesso)): ?>
+            <div class="alert-error" style="background-color: #D1FAE5; color: #065F46;">
+                <i class="fa-solid fa-check-circle"></i> <?php echo htmlspecialchars($sucesso); ?>
+            </div>
+        <?php endif; ?>
+
+        <form method="POST" action="registrar.php" class="floating-label-form">
+            
+            <div class="input-group">
+                <input type="text" id="nome" name="nome" placeholder=" " required>
+                <label for="nome"><i class="fa-solid fa-user"></i> Nome Completo</label>
+            </div>
+            
+            <div class="input-group">
+                <input type="email" id="email" name="email" placeholder=" " required>
+                <label for="email"><i class="fa-solid fa-envelope"></i> Email</label>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="senha" name="senha" placeholder=" " required>
+                <label for="senha"><i class="fa-solid fa-lock"></i> Crie uma Senha</label>
+            </div>
+
+            <button type="submit" class="btn-login">Registrar</button>
         </form>
-            
-        <p>Já tem conta? <a href="login.php">Fazer login</a></p>
+
+        <div class="login-footer">
+            <p>Já tem uma conta?</p>
+            <a href="login.php">Fazer Login</a>
+        </div>
     </div>
+
 </body>
 </html>
