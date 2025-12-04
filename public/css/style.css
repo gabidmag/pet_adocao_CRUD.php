@@ -73,17 +73,17 @@ body {
    CAMADAS (Z-INDEX)
    ========================================= */
 .navbar {
-    background-color: var(--bg-white); /* Garante que ela tenha cor de fundo */
+    background-color: var(--bg-white); 
     padding: 1rem 5%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1); /* Sombra um pouco mais forte */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
     
-    /* AQUI ESTÁ A MÁGICA: */
-    position: sticky; /* Faz ela grudar no topo */
-    top: 0;           /* Encostada no teto */
-    z-index: 99999;   /* Número bem alto para ficar na frente de TUDO */
+    
+    position: sticky; 
+    top: 0;           
+    z-index: 99999;   
 }
 
 /* =========================================
@@ -400,13 +400,13 @@ img {
     margin-bottom: 2rem;
 }
 
-/* --- ESTILO DO FORMULÁRIO COM LABEL FLUTUANTE --- */
+
 .floating-label-form .input-group {
     position: relative;
-    margin-bottom: 2rem; /* Mais espaço entre os campos */
+    margin-bottom: 2rem; 
 }
 
-/* O input fica transparente e com borda só embaixo */
+
 .floating-label-form input {
     width: 100%;
     padding: 10px 5px;
@@ -427,14 +427,14 @@ img {
     left: 5px;
     font-size: 1rem;
     color: var(--text-light);
-    pointer-events: none; /* Permite clicar através dele */
+    pointer-events: none; 
     transition: 0.2s ease all;
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-/* A MÁGICA: Quando o input está focado OU preenchido, o label sobe */
+
 .floating-label-form input:focus ~ label,
 .floating-label-form input:not(:placeholder-shown) ~ label {
     top: -20px;
@@ -482,7 +482,7 @@ img {
 }
 
 /* =========================================
-   ESTILOS DO PAINEL ADMINISTRATIVO (TABELAS)
+   ESTILOS DO PAINEL ADMINISTRATIVO 
    ========================================= */
 
 .admin-container {
@@ -702,7 +702,7 @@ img {
    ESTILOS DO DASHBOARD (HOME ADMIN)
    ========================================= */
 
-/* Garante fundo limpo no admin */
+
 body {
     background-color: var(--bg-light) !important; /* Força o azulzinho claro */
 }
@@ -986,4 +986,274 @@ body {
         grid-template-columns: 1fr; /* Uma coluna só */
         gap: 30px;
     }
+}
+
+/* Estilo dos Botões de Ícone na Navbar */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.nav-actions a, .nav-actions button {
+    width: 40px; height: 40px; border-radius: 50%;
+    background-color: var(--bg-light); border: 1px solid var(--border-color);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-light); font-size: 1rem;
+    cursor: pointer; text-decoration: none;
+    transition: all 0.2s ease-in-out;
+}
+.nav-actions a:hover, .nav-actions button:hover {
+    background-color: var(--primary-color); color: white;
+    transform: scale(1.1);
+}
+
+/* =========================================
+   BOTÕES DE ÍCONE DA NAVBAR 
+   ========================================= */
+
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px; 
+}
+
+
+.btn-icon {
+    
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; 
+
+    
+    background-color: var(--bg-light);
+    border: 1px solid var(--border-color);
+
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+   
+    color: var(--text-light); 
+    font-size: 1rem;
+
+    
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+}
+
+
+.btn-icon:hover {
+    background-color: var(--primary-color);
+    color: white; 
+    border-color: var(--primary-color);
+    transform: scale(1.1) rotate(10deg); 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.floating-label-form textarea {
+    width: 100%;
+    padding: 10px 5px;
+    font-size: 1rem;
+    font-family: var(--font-family); 
+    color: var(--text-dark);
+    border: none;
+    border-bottom: 2px solid var(--border-color);
+    background-color: transparent;
+    outline: none;
+    position: relative;
+    z-index: 10;
+    transition: 0.2s ease all;
+
+    
+    resize: none; 
+}
+
+
+.floating-label-form textarea:focus {
+    border-bottom-color: var(--primary-color);
+}
+
+
+.floating-label-form textarea:focus ~ label,
+.floating-label-form textarea:not(:placeholder-shown) ~ label {
+    top: -20px;
+    font-size: 0.8rem;
+    color: var(--primary-color);
+}
+
+/* =========================================
+   BOTÕES DA NAVBAR DO PAINEL ADMIN 
+   ========================================= */
+
+/* O container dos botões na navbar */
+.admin-navbar .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espaço entre os itens */
+}
+
+/* Saudação "Olá, (nome)!" */
+.admin-navbar .welcome-text {
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+/* Estilo base para os botões retangulares */
+.admin-navbar .btn-admin {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px; 
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    font-size: 0.9rem;
+    
+    
+    white-space: nowrap; 
+}
+
+.admin-navbar .btn-admin:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Cores específicas */
+.btn-admin.site { background-color: var(--primary-color); color: white; }
+.btn-admin.logout { background-color: #EF4444; color: white; }
+.btn-admin.back { background-color: var(--bg-light); color: var(--text-light); border: 1px solid var(--border-color); }
+
+/* =========================================
+   ESTILO DO MODAL/POP-UP DE DOAÇÃO
+   ========================================= */
+
+/* Fundo escurecido que cobre a tela */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Classe que ativa o modal */
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* O card branco do pop-up */
+.modal-content {
+    background-color: var(--bg-white);
+    padding: 2.5rem;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    position: relative;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal-content {
+    transform: scale(1);
+}
+
+
+.modal-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.modal-content h2 {
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+
+.modal-content p {
+    color: var(--text-light);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+}
+
+
+.modal-contato {
+    background-color: var(--bg-light);
+    border: 2px dashed var(--primary-color);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--secondary-color);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+.modal-contato i {
+    color: #25D366; 
+}
+
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.close-btn:hover {
+    transform: scale(1.2);
+    color: var(--primary-color);
+}
+
+/* =========================================
+   ESTILO DO ÍCONE DE USUÁRIO LOGADO
+   ========================================= */
+
+/* Container para o ícone e a bolinha */
+.user-status {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.online-indicator {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 10px;
+    height: 10px;
+    background-color: #65d08cc5; 
+    border-radius: 50%;
+    border: 2px solid var(--bg-white);
+    z-index: 10;
+}
+
+
+.user-name-display {
+    color: var(--text-dark);
+    font-weight: 500;
+    font-size: 0.9rem;
 }

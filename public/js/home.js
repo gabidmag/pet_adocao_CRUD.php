@@ -23,62 +23,69 @@ document.addEventListener('DOMContentLoaded', () => {
 async function carregarPets() {
     const container = document.getElementById('pets-container');
     
-    // Verificação de segurança
     if (!container) {
         console.error("ERRO: Div 'pets-container' não encontrada.");
         return;
     }
 
-    container.innerHTML = '<p style="text-align:center; padding: 20px;">Buscando novos amigos...</p>';
+    container.innerHTML = '<p style="text-align:center;">Buscando novos amigos...</p>';
 
     try {
         const response = await fetch('api_pets.php');
-        
         if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
 
         const pets = await response.json();
-        container.innerHTML = ''; // Limpa o loading
+        container.innerHTML = '';
 
         if (!pets || pets.length === 0) {
-            container.innerHTML = '<p style="text-align:center">Nenhum pet disponível no momento.</p>';
+            container.innerHTML = '<p style="text-align:center">Nenhum pet disponível.</p>';
             return;
         }
 
         pets.forEach(pet => {
-            // --- LÓGICA DE IMAGEM ---
-            let imgUrl = pet.imagem_final || pet.foto;
-            
-            // Se o caminho não tiver barra, adiciona o prefixo da pasta
-            if (imgUrl && !imgUrl.includes('/')) {
-                imgUrl = 'public/uploads/' + imgUrl;
-            }
-            
-            // Placeholder se não tiver foto
-            if (!imgUrl) imgUrl = 'https://placehold.co/400x300?text=Sem+Foto';
-
-            // Tratamento de textos
+            // --- Variáveis para não dar erro se algo for nulo ---
+            let imgUrl = pet.imagem_final || pet.foto || 'https://placehold.co/400x300?text=Sem+Foto';
             const nome = pet.nome || 'Pet sem nome';
             const raca = pet.raca || 'SRD';
             const especie = pet.especie || 'Pet';
             const badgeClass = especie.toLowerCase().includes('gato') ? 'cat' : 'dog';
+            
+            
+            const idade = pet.idade_anos ? `${pet.idade_anos} anos` : '?';
+            const porte = pet.porte || 'Não informado';
+            const local = pet.localizacao || 'Não informado';
+            const descricao = pet.descricao ? `${pet.descricao.substring(0, 80)}...` : 'Um amigo esperando por você!';
+            const taxa = pet.taxa_adocao ? `R$ ${pet.taxa_adocao}` : 'Grátis';
 
-            // HTML do Card
+            // --- HTML DO CARD COMPLETO ---
             const cardHTML = `
                 <article class="pet-card">
                     <div style="height: 250px; overflow: hidden; background: #eee;">
-                        <img src="${imgUrl}" alt="${nome}" 
-                             style="width: 100%; height: 100%; object-fit: cover;"
-                             onerror="this.onerror=null; this.src='https://placehold.co/400x300?text=Erro+Imagem';">
+                        <img src="${imgUrl}" alt="${nome}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://placehold.co/400x300?text=Erro'">
                     </div>
                     <div class="card-content">
                         <div class="pet-header">
                             <h2>${nome}</h2>
                             <span class="badge ${badgeClass}">${especie}</span>
                         </div>
-                        <p class="breed" style="color:var(--primary-color); margin-bottom:10px;">${raca}</p>
+                        <p class="breed" style="color:var(--primary-color); font-size:0.9rem; margin-bottom:10px;">${raca}</p>
+                        
+                        <!-- SEÇÃO DE DETALHES QUE SUMIU -->
+                        <div class="pet-details">
+                            <span><i class="fa-regular fa-calendar-alt"></i> ${idade}</span>
+                            <span><i class="fa-solid fa-ruler-vertical"></i> ${porte}</span>
+                        </div>
+                        <div class="location">
+                            <i class="fa-solid fa-map-marker-alt"></i> ${local}
+                        </div>
+                        <p style="font-size: 0.8rem; color: #888; margin-top: 10px; min-height: 40px;">${descricao}</p>
+                        
                         <div class="card-footer">
-                            <span class="price">R$ ${pet.taxa_adocao || '0.00'}</span>
-                            <a href="public/detalhe_pet.php?id=${pet.id}" class="btn-details" style="background:var(--primary-color); border:none; color:white; padding:8px 15px; border-radius:5px; cursor:pointer; text-decoration: none;">Ver Detalhes</a>
+                            <div>
+                                <span style="font-size:0.7rem; display:block; opacity:0.7;">Taxa</span>
+                                <span class="price">${taxa}</span>
+                            </div>
+                            <a href="public/detalhe_pet.php?id=${pet.id}" class="btn-details">Ver Detalhes</a>
                         </div>
                     </div>
                 </article>
@@ -87,8 +94,8 @@ async function carregarPets() {
         });
 
     } catch (error) {
-        console.error("ERRO API:", error);
-        container.innerHTML = `<p style="text-align:center; color:red;">Erro ao carregar pets.</p>`;
+        console.error("ERRO:", error);
+        container.innerHTML = `<p style="text-align:center; color:red;">Erro ao carregar os pets.</p>`;
     }
 }
 
@@ -191,3 +198,39 @@ function criarFundoAnimado() {
         bgContainer.appendChild(icone);
     }
 }
+
+/* =========================================
+   LÓGICA DO MODAL/POP-UP DE DOAÇÃO
+   ========================================= */
+document.addEventListener('DOMContentLoaded', () => {
+    
+    const modal = document.getElementById('doacao-modal');
+    const closeModalBtn = document.getElementById('close-modal');
+
+    // Função para ABRIR o modal
+    const openModal = () => {
+        if(modal) modal.classList.add('active');
+    };
+
+    // Função para FECHAR o modal
+    const closeModal = () => {
+        if(modal) modal.classList.remove('active');
+    };
+
+    
+    setTimeout(openModal, 3000);
+
+    
+    if(closeModalBtn) {
+        closeModalBtn.addEventListener('click', closeModal);
+    }
+
+    
+    if(modal) {
+        modal.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+    }
+});

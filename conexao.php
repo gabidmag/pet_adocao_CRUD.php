@@ -1,6 +1,5 @@
 <?php
-    // conexao.php - Configuração do banco de dados
-
+    
     $host = 'localhost:3306';
     $usuario = 'root';
     $senha = '';

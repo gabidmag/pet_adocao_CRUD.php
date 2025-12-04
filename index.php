@@ -1,13 +1,13 @@
 <?php
-// Mantemos apenas o necessário para saber se é admin ou visitante
+
 require_once 'conexao.php';
 
-// Tenta iniciar sessão para verificar se o admin está logado
+
 if(!isset($_SESSION)) {
     session_start();
 }
 
-// Função simples para checar login (caso o verifica-login.php force redirecionamento, usamos essa verificação manual)
+
 function esta_logado() {
     return isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
 }
@@ -32,20 +32,63 @@ function esta_logado() {
             <i class="fa-solid fa-heart"></i> PetAdopt
         </div>
         <ul class="nav-links">
-            <li><a href="#pets-container">Nossos Pets</a></li>
-            
-            <?php if (esta_logado()): ?>
-                <!-- Se for Admin, mostra botão para ir ao Painel -->
-                <li><a href="admin/index.php" class="btn-details" style="background-color: #10B981;">Painel Admin</a></li>
-                <li><a href="logout.php" style="color: #EF4444;"><i class="fa-solid fa-right-from-bracket"></i> Sair</a></li>
+    
+            <?php if (isset($_SESSION['tipo_usuario']) && $_SESSION['tipo_usuario'] === 'admin'): ?>
+               <!-- Se for ADMIN LOGADO -->
+               <li><a href="#pets-container">Nossos Pets</a></li>
+               <li><a href="admin/index.php" class="btn-details">Painel Admin</a></li>
+               <li><a href="logout.php" style="color:#EF4444; font-weight:bold;">Sair</a></li>
+
+            <?php elseif (isset($_SESSION['tipo_usuario']) && $_SESSION['tipo_usuario'] === 'usuario'): ?>
+                <!-- Se for USUÁRIO COMUM LOGADO -->
+                <li><a href="#pets-container">Nossos Pets</a></li>
+                <li><a href="logout_public.php" style="color:#EF4444; font-weight:bold;">Sair</a></li>
+
             <?php else: ?>
-                <!-- Se for Visitante, mostra botão de Área Restrita -->
-                <li><a href="login.php" class="btn-details">Área Restrita</a></li>
+               <!-- Se for VISITANTE -->
+               <li><a href="#pets-container">Nossos Pets</a></li>
+               <li><a href="login.php" class="btn-details">Área Restrita (Admin)</a></li>
             <?php endif; ?>
+    
         </ul>
+
+
         <div class="nav-actions">
-            <button id="theme-toggle"><i class="fa-solid fa-sun"></i></button>
+
+    <?php if (isset($_SESSION['id_usuario'])): ?>
+        
+        <!-- SE O USUÁRIO ESTIVER LOGADO -->
+        <div class="user-status">
+            
+            <!-- Mostra o nome do usuário -->
+            <span class="user-name-display">
+                <?php echo htmlspecialchars($_SESSION['nome_usuario']); ?>
+            </span>
+            
+            <!-- Ícone  verde -->
+            <div class="btn-icon" style="position: relative;">
+                <i class="fa-solid fa-user"></i>
+                <div class="online-indicator"></div>
+            </div>
+            
         </div>
+
+    <?php else: ?>
+
+        <!-- SE FOR VISITANTE (NÃO LOGADO) -->
+        <a href="login_public.php" class="btn-icon" title="Login de Usuário">
+            <i class="fa-regular fa-user"></i>
+        </a>
+        
+    <?php endif; ?>
+
+    <!-- Botão de Tema -->
+    <button id="theme-toggle" class="btn-icon" title="Alternar Tema">
+        <i class="fa-solid fa-sun"></i>
+    </button>
+    
+</div>
+
     </nav>
 
     <!-- Hero Section (A parte bonita do topo) -->
@@ -90,5 +133,30 @@ function esta_logado() {
         });
         
     </script>
+
+<!-- ===== MODAL/POP-UP DE DOAÇÃO ===== -->
+<div id="doacao-modal" class="modal-overlay">
+    <div class="modal-content">
+        <button id="close-modal" class="close-btn">&times;</button>
+        
+        <div class="modal-icon">
+            <i class="fa-solid fa-hand-holding-heart"></i>
+        </div>
+        
+        <h2>Quer doar um pet?</h2>
+        <p>Se você resgatou um animalzinho e precisa de ajuda para encontrar um lar para ele, fale conosco! Teremos prazer em ajudar no processo de adoção.</p>
+        
+        <div class="modal-contato">
+            <i class="fa-brands fa-whatsapp"></i>
+            <span>(83) 99999-8888</span>
+        </div>
+        
+        <p class="modal-footer-text">Entre em contato e ajude a salvar uma vida!</p>
+    </div>
+</div>
+
+</body>
+</html>
+
 </body>
 </html>

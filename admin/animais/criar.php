@@ -4,38 +4,38 @@
     require_login('../../login.php'); 
 
     $mensagem = '';
-    $upload_dir = '../../public/uploads/'; // Ajustei para a pasta public correta
+    $upload_dir = '../../public/uploads/'; 
 
-    // Cria a pasta se não existir
+    
     if (!is_dir($upload_dir)) {
         mkdir($upload_dir, 0777, true);
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
-        // Pega dados do formulário
+        
         $nome = $_POST['nome'] ?? '';
         $especie = $_POST['especie'] ?? '';
         $raca = $_POST['raca'] ?? '';
-        // ATENÇÃO: Se seu banco usa 'idade_anos', mude aqui embaixo e no SQL
+        
         $idade = $_POST['idade'] ?? 0; 
         $descricao = $_POST['descricao'] ?? '';
         $status = 'disponivel';
         
         $foto_nome = null;
         
-        // Upload da foto
+        
         if (!empty($_FILES['foto']['name']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
             $extensao = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
-            $foto_nome = uniqid() . '.' . $extensao; // Nome único
+            $foto_nome = uniqid() . '.' . $extensao; 
             $caminho_completo = $upload_dir . $foto_nome;
             
-            // Tipos permitidos
+            
             $tipos_permitidos = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
             
             if (in_array($_FILES['foto']['type'], $tipos_permitidos) && $_FILES['foto']['size'] < 5000000) {
                 if(move_uploaded_file($_FILES['foto']['tmp_name'], $caminho_completo)) {
-                    // Upload ok
+                    
                 } else {
                     $mensagem = "❌ Erro ao mover o arquivo para a pasta.";
                 }
@@ -49,10 +49,7 @@
             $mensagem = "❌ Preencha Nome e Espécie.";
         } elseif (empty($mensagem) || strpos($mensagem, '❌') === false) {
             
-            // AJUSTE O SQL SE NECESSÁRIO: 
-            // Verifique se no seu banco a coluna é 'idade' ou 'idade_anos'. 
-            // Vou usar 'idade_anos' pois foi o que vimos na sua tabela antes.
-            // Se der erro, troque de volta para 'idade'.
+            
             $sql = "INSERT INTO animais (nome, especie, raca, idade_anos, descricao, foto, status) 
                     VALUES ('$nome', '$especie', '$raca', $idade, '$descricao', '$foto_nome', '$status')";
             
@@ -60,7 +57,7 @@
                 $mensagem = "✅ Animal cadastrado com sucesso!";
             } else {
                 $mensagem = "❌ Erro no banco: " . mysqli_error($mysqli);
-                // Apaga foto se deu erro no banco
+                
                 if ($foto_nome && file_exists($upload_dir . $foto_nome)) {
                     unlink($upload_dir . $foto_nome);
                 }

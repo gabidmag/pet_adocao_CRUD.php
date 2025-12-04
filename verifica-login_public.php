@@ -1,5 +1,5 @@
 <?php
-// ...existing code...
+
 session_start();
 
 function is_logged_in(): bool {

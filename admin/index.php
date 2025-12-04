@@ -5,7 +5,7 @@
 
     $nome_usuario = $_SESSION['nome_usuario'] ?? 'Administrador';
     
-    // Inicializa contadores com 0
+    // inicia com 0 o contadorr
     $total_animais = 0;
     $animais_disponiveis = 0;
     $pedidos_pendentes = 0;
@@ -21,7 +21,6 @@
     }
 
     // 3. Conta Pedidos de Adoção Pendentes
-    // O @ esconde erro caso a tabela adocoes ainda não tenha sido criada
     $sql_pedidos = "SELECT COUNT(*) as total FROM adocoes WHERE status = 'pendente'";
     if ($result = @mysqli_query($mysqli, $sql_pedidos)) {
         $pedidos_pendentes = mysqli_fetch_assoc($result)['total'];
@@ -42,14 +41,24 @@
 <body>
 
     <!-- Navbar Admin -->
-    <nav class="navbar">
-        <div class="logo"><i class="fa-solid fa-chart-line"></i> Dashboard</div>
-        <div class="nav-actions">
-            <span style="margin-right: 20px; font-weight: 500; color: var(--text-dark);">Olá, <?php echo htmlspecialchars($nome_usuario); ?></span>
-            <a href="../index.php" style="margin-right: 15px; color: var(--primary-color);">Ver Site</a>
-            <a href="../logout.php" class="btn-details" style="background-color: #EF4444; border:none;">Sair</a>
-        </div>
-    </nav>
+    <nav class="navbar admin-navbar">
+    <div class="logo"><i class="fa-solid fa-chart-line"></i> Dashboard</div>
+    
+    <div class="nav-actions">
+        
+        <span class="welcome-text">Olá, <?php echo htmlspecialchars($nome_usuario); ?>!</span>
+        
+        
+        <a href="../index.php" class="btn-admin site">
+            <i class="fa-solid fa-eye"></i> Ver Site
+        </a>
+        
+        
+        <a href="../logout.php" class="btn-admin logout">
+            <i class="fa-solid fa-right-from-bracket"></i> Sair
+        </a>
+    </div>
+</nav>
 
     <div class="dashboard-container">
         

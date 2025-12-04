@@ -1,127 +1,114 @@
 <?php
-// Caminhos relativos para sair da pasta admin/animais/
-require_once '../../conexao.php';
-require_once '../../verifica-login.php';
+    require_once '../../conexao.php';
+    require_once '../../verifica-login.php';
+    require_login('../../login.php'); 
 
-// Busca os animais ordenados pelo ID decrescente (mais novos primeiro)
-$sql = "SELECT * FROM animais ORDER BY id DESC";
-$resultado = mysqli_query($mysqli, $sql);
+    $pedidos = [];
+    $erro = '';
+
+    // SQL que busca os PEDIDOS DE ADOÇÃO (e não os animais)
+    $sql = "SELECT 
+                a.id, a.nome_adotante, a.email_adotante, a.data_pedido, a.status,
+                p.nome AS nome_animal, p.id AS animal_id
+            FROM adocoes a
+            JOIN animais p ON a.animal_id = p.id
+            ORDER BY a.data_pedido DESC";
+
+    $resultado = mysqli_query($mysqli, $sql);
+
+    if ($resultado) {
+        while ($row = mysqli_fetch_assoc($resultado)) {
+            $pedidos[] = $row;
+        }
+    } else {
+        $erro = "Erro ao buscar pedidos: " . mysqli_error($mysqli);
+    }
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciar Animais</title>
-    
-    <!-- Ícones FontAwesome -->
+    <title>Pedidos de Adoção - Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- SEU CSS MODERNO -->
-    <link rel="stylesheet" href="../../public/css/style.css">
+    <link rel="stylesheet" href="../../public/css/style.css"> 
 </head>
 <body>
 
-    <!-- Navbar do Admin -->
-    <nav class="navbar">
-        <div class="logo"><i class="fa-solid fa-shield-dog"></i> Painel Admin</div>
+    <!-- NAV ADMIN PADRÃO -->
+    <nav class="navbar admin-navbar">
+        <div class="logo"><i class="fa-solid fa-envelope-open-text"></i> Pedidos de Adoção</div>
         <div class="nav-actions">
-            <a href="../index.php" style="text-decoration:none; color:var(--text-dark); font-weight:500;">
-                <i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard
+            <a href="../index.php" class="btn-admin back">
+                <i class="fa-solid fa-arrow-left"></i> Voltar ao Painel
             </a>
         </div>
     </nav>
 
     <div class="admin-container">
         
-        <!-- Cabeçalho da Tabela -->
         <div class="admin-header">
             <div>
-                <h2 style="font-size: 1.5rem; color: var(--secondary-color);">Animais Cadastrados</h2>
-                <p style="color: var(--text-light); font-size: 0.9rem;">Gerencie os pets disponíveis para adoção.</p>
+                <h2>Solicitações Recebidas</h2>
+                <p style="color:var(--text-light); font-size: 0.9rem;">Analise os pedidos para aprovar ou rejeitar.</p>
             </div>
-            <a href="criar.php" class="btn-add">
-                <i class="fa-solid fa-plus"></i> Novo Animal
-            </a>
         </div>
+        
+        <?php if ($erro): ?>
+            <div class="alert-error"><?php echo $erro; ?></div>
+        <?php endif; ?>
 
-        <!-- Tabela Estilizada -->
         <div class="table-responsive">
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th width="80">Foto</th>
-                        <th>Nome</th>
-                        <th>Espécie</th>
-                        <th>Raça</th>
-                        <th>Idade</th>
+                        <th>ID Pedido</th>
+                        <th>Adotante</th>
+                        <th>Contato</th>
+                        <th>Interesse no Pet</th>
+                        <th>Data</th>
                         <th>Status</th>
-                        <th width="120">Ações</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($row = mysqli_fetch_assoc($resultado)): ?>
-                        <?php
-                            // Lógica para exibir a imagem corretamente
-                            $foto = $row['foto'];
-                            
-                            // Se não tem foto, usa placeholder
-                            if(empty($foto)) {
-                                $imgSrc = 'https://placehold.co/100x100?text=Sem+Foto';
-                            } 
-                            // Se já for um link (http), usa ele
-                            elseif (strpos($foto, 'http') === 0) {
-                                $imgSrc = $foto;
-                            } 
-                            // Se for arquivo local, aponta para a pasta public/uploads
-                            else {
-                                $imgSrc = '../../public/uploads/' . basename($foto);
-                            }
-                        ?>
+                    <?php if (empty($pedidos)): ?>
                         <tr>
-                            <td>
-                                <img src="<?php echo $imgSrc; ?>" alt="Pet" class="thumb-img">
-                            </td>
-                            
-                            <td>
-                                <strong><?php echo htmlspecialchars($row['nome']); ?></strong>
-                            </td>
-                            
-                            <td><?php echo htmlspecialchars($row['especie']); ?></td>
-                            
-                            <td><?php echo htmlspecialchars($row['raca'] ?? 'SRD'); ?></td>
-                            
-                            <!-- AQUI ESTAVA O ERRO: Mudamos para idade_anos -->
-                            <td>
-                                <?php 
-                                    $anos = $row['idade_anos'] ?? 0;
-                                    echo $anos . ($anos == 1 ? ' ano' : ' anos');
-                                ?>
-                            </td>
-
-                            <td>
-                                <?php 
-                                    $status = $row['status'] ?? 'disponivel';
-                                    $classe = '';
-                                    if($status == 'disponivel') $classe = 'disponivel';
-                                    if($status == 'adotado') $classe = 'adotado';
-                                ?>
-                                <span class="status-badge <?php echo $classe; ?>">
-                                    <?php echo ucfirst($status); ?>
-                                </span>
-                            </td>
-                            
-                            <td class="action-links">
-                                <a href="editar.php?id=<?php echo $row['id']; ?>" class="edit-btn" title="Editar">
-                                    <i class="fa-solid fa-pen"></i>
-                                </a>
-                                <a href="deletar.php?id=<?php echo $row['id']; ?>" class="delete-btn" title="Excluir" onclick="return confirm('Tem certeza que deseja apagar o registro de <?php echo $row['nome']; ?>?');">
-                                    <i class="fa-solid fa-trash"></i>
-                                </a>
+                            <td colspan="7" style="text-align: center; padding: 40px; color: var(--text-light);">
+                                Nenhum pedido de adoção encontrado.
                             </td>
                         </tr>
-                    <?php endwhile; ?>
+                    <?php else: ?>
+                        <?php foreach ($pedidos as $pedido): ?>
+                            <tr>
+                                <td>#<?php echo $pedido['id']; ?></td>
+                                <td><strong><?php echo htmlspecialchars($pedido['nome_adotante']); ?></strong></td>
+                                <td style="font-size: 0.9rem;"><?php echo htmlspecialchars($pedido['email_adotante']); ?></td>
+                                <td>
+                                    <a href="../animais/editar.php?id=<?php echo $pedido['animal_id']; ?>">
+                                        <?php echo htmlspecialchars($pedido['nome_animal']); ?>
+                                    </a>
+                                </td>
+                                <td><?php echo date('d/m/Y', strtotime($pedido['data_pedido'])); ?></td>
+                                <td>
+                                    <?php 
+                                        $status = $pedido['status'] ?? 'pendente';
+                                        $classe = '';
+                                        if($status == 'aprovada') $classe = 'disponivel';
+                                        elseif($status == 'rejeitada') $classe = 'indisponivel';
+                                        else $classe = 'adotado';
+                                    ?>
+                                    <span class="status-badge <?php echo $classe; ?>">
+                                        <?php echo ucfirst($status); ?>
+                                    </span>
+                                </td>
+                                <td class="action-links">
+                                    <a href="visualizar.php?id=<?php echo $pedido['id']; ?>" class="edit-btn" title="Ver Detalhes"><i class="fa-solid fa-eye"></i></a>
+                                    <a href="deletar.php?id=<?php echo $pedido['id']; ?>" class="delete-btn" title="Excluir" onclick="return confirm('Excluir este pedido?');"><i class="fa-solid fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>

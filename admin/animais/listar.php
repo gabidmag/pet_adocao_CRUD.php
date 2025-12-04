@@ -1,9 +1,9 @@
 <?php
-// Caminhos relativos para sair da pasta admin/animais/
+
 require_once '../../conexao.php';
 require_once '../../verifica-login.php';
 
-// Busca os animais ordenados pelo ID decrescente (mais novos primeiro)
+// os animais ordenados pelo ID decrescente 
 $sql = "SELECT * FROM animais ORDER BY id DESC";
 $resultado = mysqli_query($mysqli, $sql);
 ?>
@@ -24,14 +24,15 @@ $resultado = mysqli_query($mysqli, $sql);
 <body>
 
     <!-- Navbar do Admin -->
-    <nav class="navbar">
-        <div class="logo"><i class="fa-solid fa-shield-dog"></i> Painel Admin</div>
-        <div class="nav-actions">
-            <a href="../index.php" style="text-decoration:none; color:var(--text-dark); font-weight:500;">
-                <i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard
-            </a>
-        </div>
-    </nav>
+    <nav class="navbar admin-navbar">
+    <div class="logo"><i class="fa-solid fa-shield-dog"></i> Gerenciar Pets</div>
+    
+    <div class="nav-actions">
+        <a href="../index.php" class="btn-admin back">
+            <i class="fa-solid fa-arrow-left"></i> Voltar ao Painel
+        </a>
+    </div>
+</nav>
 
     <div class="admin-container">
         
@@ -63,18 +64,18 @@ $resultado = mysqli_query($mysqli, $sql);
                 <tbody>
                     <?php while ($row = mysqli_fetch_assoc($resultado)): ?>
                         <?php
-                            // Lógica para exibir a imagem corretamente
+                            
                             $foto = $row['foto'];
                             
-                            // Se não tem foto, usa placeholder
+                            
                             if(empty($foto)) {
                                 $imgSrc = 'https://placehold.co/100x100?text=Sem+Foto';
                             } 
-                            // Se já for um link (http), usa ele
+                            
                             elseif (strpos($foto, 'http') === 0) {
                                 $imgSrc = $foto;
                             } 
-                            // Se for arquivo local, aponta para a pasta public/uploads
+                            
                             else {
                                 $imgSrc = '../../public/uploads/' . basename($foto);
                             }
@@ -92,7 +93,7 @@ $resultado = mysqli_query($mysqli, $sql);
                             
                             <td><?php echo htmlspecialchars($row['raca'] ?? 'SRD'); ?></td>
                             
-                            <!-- AQUI ESTAVA O ERRO: Mudamos para idade_anos -->
+                            
                             <td>
                                 <?php 
                                     $anos = $row['idade_anos'] ?? 0;

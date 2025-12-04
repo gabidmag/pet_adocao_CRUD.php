@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($nome === '' || $email === '' || $senha === '') {
         $erro = 'Preencha todos os campos.';
     } else {
-        // evita duplicados
+        
         $sql_check = "SELECT id_usuario FROM usuarios WHERE email_usuario = ? LIMIT 1";
         $stmt = mysqli_prepare($mysqli, $sql_check);
         mysqli_stmt_bind_param($stmt, 's', $email);

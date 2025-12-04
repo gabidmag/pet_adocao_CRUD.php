@@ -10,7 +10,7 @@
         exit();
     }
 
-    // 1. Busca o nome da foto
+    
     $sql_select = "SELECT foto FROM animais WHERE id = $animal_id";
     $resultado = mysqli_query($mysqli, $sql_select);
 
@@ -23,12 +23,12 @@
         exit();
     }
 
-    // 2. Deleta o registro
+    
     $sql_delete = "DELETE FROM animais WHERE id = $animal_id";
 
     if (mysqli_query($mysqli, $sql_delete)) {
         
-        // 3. Deleta a foto
+        
         if (!empty($foto_nome)) {
             $foto_caminho = '../../uploads/' . $foto_nome;
             if (file_exists($foto_caminho)) {

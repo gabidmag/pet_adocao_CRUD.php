@@ -1,6 +1,6 @@
 <?php
     require_once '../conexao.php';
-    require_once '../verifica-login.php';
+    require_once '../verifica-login_public.php';
 
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         header('Location: animais.php');
@@ -15,7 +15,7 @@
 
     $destino = 'animais.php';
     if ($animal_id > 0) {
-        $destino = 'detalhe-animal.php?id=' . $animal_id;
+        $destino = 'detalhe_pet.php?id=' . $animal_id;
     }
 
     $erros = [];
