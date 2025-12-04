@@ -4,7 +4,7 @@ Projeto desenvolvido para a disciplina de **Programação Web** da UNIPÊ (prof.
 
 ## ✨ Objetivos do trabalho
 - Praticar os pilares do CRUD (Create, Read, Update, Delete) em PHP.
-- Entender a integração entre backend em PHP com MySQL utilizando PDO.
+- Entender a integração entre backend em PHP com MySQL utilizando sqli.
 - Organizar o front-end sem frameworks, focando em HTML, CSS e um pouco de JavaScript.
 - Produzir documentação e código limpos, pensando em colaboração entre os integrantes.
 
