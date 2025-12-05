@@ -2,6 +2,8 @@
 
 Projeto desenvolvido para a disciplina de **Programação Web** da UNIPÊ (prof. Daniel Brandão). A proposta era construir um CRUD completo utilizando apenas PHP puro, HTML, CSS e MySQL. Nosso tema escolhido foi um portal simples para cadastro e adoção de pets, permitindo que abrigos registrem os animais e que visitantes conheçam os bichinhos disponíveis.
 
+[Documentação do Projeto](https://docs.google.com/document/d/1AfqTI9f5nhlBlI-hn2pSIA3kfYnmmxI0RAkhf8WvFU8/edit?usp=sharing)
+
 ## ✨ Objetivos do trabalho
 - Praticar os pilares do CRUD (Create, Read, Update, Delete) em PHP.
 - Entender a integração entre backend em PHP com MySQL utilizando sqli.
